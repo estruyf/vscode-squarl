@@ -124,8 +124,8 @@ export class ExtensionService {
    * @param settingKey 
    * @param value 
    */
-  public setSetting(settingKey: string, value: any): void {
+  public async setSetting(settingKey: string, value: any): Promise<void> {
     const config = workspace.getConfiguration(CONFIG_KEY);
-    config.update(settingKey, value);
+    await config.update(settingKey, value);
   }
 }

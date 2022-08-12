@@ -60,12 +60,14 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
 export class BookmarkTreeItem extends TreeItem {
   
   constructor(
+    public id: string,
     public label: string,
     public description: string | undefined,
     public collapsibleState: TreeItemCollapsibleState,
     public iconPath: string | ThemeIcon | Uri | { light: string | Uri; dark: string | Uri; } | undefined,
     public path?: string,
     public type?: BookmarkType,
+    public contextValue?: string,
     public children?: BookmarkTreeItem[]
   ) {
     super(label, collapsibleState);

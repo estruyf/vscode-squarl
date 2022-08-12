@@ -1,6 +1,7 @@
 import { BookmarkType } from ".";
 
 export interface Bookmark {
+  id?: string;
   name: string;
   path: string;
 

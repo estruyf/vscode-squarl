@@ -25,6 +25,18 @@
         "command": "squarl.addFile",
         "title": "Bookmark file",
         "category": "Squarl"
+      },
+      {
+        "command": "squarl.editBookmark",
+        "title": "Bookmark file",
+        "category": "Squarl",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "squarl.deleteBookmark",
+        "title": "Bookmark file",
+        "category": "Squarl",
+        "icon": "$(trash)"
       }
     ],
     "configuration": {
@@ -37,6 +49,10 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of the bookmark. If not set, this will be generated automatically by the extension."
+              },
               "name": {
                 "type": "string",
                 "description": "Name of the bookmark"
@@ -72,22 +88,46 @@
       }
     },
     "viewsContainers": {
-			"activitybar": [
-				{
-					"id": "squarl-view",
-					"title": "Squarl",
-					"icon": "assets/logo/squarl.svg"
-				}
-			]
-		},
+      "activitybar": [
+        {
+          "id": "squarl-view",
+          "title": "Squarl",
+          "icon": "assets/logo/squarl.svg"
+        }
+      ]
+    },
     "views": {
-			"squarl-view": [
-				{
-					"id": "squarl-bookmarks",
-					"name": "Bookmarks"
-				}
-			]
-		}
+      "squarl-view": [
+        {
+          "id": "squarl-bookmarks",
+          "name": "Bookmarks"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "squarl.editBookmark",
+          "when": "false"
+        },
+        {
+          "command": "squarl.deleteBookmark",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "squarl.editBookmark",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "inline@1"
+        },
+        {
+          "command": "squarl.deleteBookmark",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "inline@1"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -101,19 +141,23 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.70.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
+    "@types/uuid": "^8.3.4",
+    "@types/vscode": "^1.70.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.1.5",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
-    "typescript": "^4.7.4",
     "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
     "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
-    "@vscode/test-electron": "^2.1.5"
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
   }
 }

@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { ThemeIcon } from 'vscode';
 import { TreeItemCollapsibleState, TreeView, Uri, window } from 'vscode';
 import { SETTING } from '../constants';
@@ -9,6 +10,7 @@ import { ExtensionService } from './../services/ExtensionService';
 export class BookmarkView {
   private static provider: BookmarkProvider;
   private static tree: TreeView<BookmarkTreeItem>;
+  public static currentItems: Bookmark[];
 
   public static async init() {
     await BookmarkView.bindBookmarks();
@@ -41,12 +43,35 @@ export class BookmarkView {
   public static async getBookmarks() {
     const ext = ExtensionService.getInstance();
     const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
-    
-    const files = bookmarks.filter(b => b.type === BookmarkType.File).map(this.createBookmark);
-    const links = bookmarks.filter(b => b.type === BookmarkType.Link).map(this.createBookmark);
 
-    const filesGroup = new BookmarkTreeItem('Files', undefined, await BookmarkProvider.getCollapsibleState('Files'), new ThemeIcon(`files`), undefined, undefined, [...files]);
-	  const linksGroup = new BookmarkTreeItem('Links', undefined, await BookmarkProvider.getCollapsibleState('Links'), new ThemeIcon(`globe`), undefined, undefined, [...links]);
+    this.currentItems = bookmarks.map(b => ({...b, id: b.id || v4()}));
+    
+    const files = this.currentItems.filter(b => b.type === BookmarkType.File).map(this.createBookmark);
+    const links = this.currentItems.filter(b => b.type === BookmarkType.Link).map(this.createBookmark);
+
+    const filesGroup = new BookmarkTreeItem(
+      'group.files',
+      'Files', 
+      undefined, 
+      await BookmarkProvider.getCollapsibleState('Files'), 
+      new ThemeIcon(`files`),
+      undefined,
+      undefined,
+      undefined, 
+      [...files]
+    );
+
+	  const linksGroup = new BookmarkTreeItem(
+      'group.links',
+      'Links',
+      undefined,
+      await BookmarkProvider.getCollapsibleState('Links'),
+      new ThemeIcon(`globe`),
+      undefined,
+      undefined,
+      undefined,
+      [...links]
+    );
 
     return [filesGroup, linksGroup];
   }
@@ -58,12 +83,14 @@ export class BookmarkView {
    */
   private static createBookmark(bookmark: Bookmark) {
     return new BookmarkTreeItem(
+      bookmark.id || v4(),
       bookmark.name, 
       bookmark.description, 
       TreeItemCollapsibleState.None, 
       undefined,
       bookmark.path,
-      bookmark.type
+      bookmark.type,
+      "bookmark",
     );
   }
 }

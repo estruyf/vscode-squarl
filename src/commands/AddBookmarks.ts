@@ -6,6 +6,7 @@ import { commands, window } from 'vscode';
 import { ExtensionService } from './../services/ExtensionService';
 import { BookmarkType } from '../models';
 import { basename, parse, relative } from 'path';
+import { BookmarkTreeItem } from '../providers/BookmarkProvider';
 
 
 export class AddBookmarks {
@@ -19,6 +20,12 @@ export class AddBookmarks {
     );
     subscriptions.push(
       commands.registerCommand(COMMAND.addFile, AddBookmarks.addFile)
+    );
+    subscriptions.push(
+      commands.registerCommand(COMMAND.editBookmark, AddBookmarks.edit)
+    );
+    subscriptions.push(
+      commands.registerCommand(COMMAND.deleteBookmark, AddBookmarks.delete)
     );
   }
 
@@ -73,6 +80,11 @@ export class AddBookmarks {
       path = relative(wsPath.fsPath, path);
     }
 
+    const bookmarks = BookmarkView.currentItems;
+    if (bookmarks.find(b => b.path === path)) {
+      return window.showWarningMessage(`File already added`);
+    }
+
     const description = await window.showInputBox({
       prompt: 'Enter a description for the file',
       placeHolder: '',
@@ -98,5 +110,72 @@ export class AddBookmarks {
     } as Bookmark);
 
     ext.setSetting(SETTING.bookmarks, bookmarks);
+  }
+
+  private static async edit(e: BookmarkTreeItem) {
+    const ext = ExtensionService.getInstance();
+    const items = BookmarkView.currentItems;
+    const bookmark = items.find(b => b.id === e.id);
+
+    if (!bookmark) {
+      return;
+    }
+
+    if (e.type === BookmarkType.Link) {
+      const link = await window.showInputBox({
+        prompt: 'Enter the link to add',
+        placeHolder: 'https://example.com',
+        ignoreFocusOut: true,
+        value: bookmark.path
+      });
+
+      if (!link) {
+        return;
+      }
+
+      const name = await window.showInputBox({
+        prompt: 'Enter the name of the link',
+        placeHolder: '',
+        ignoreFocusOut: true,
+        value: bookmark.name
+      });
+  
+      if (!name) {
+        return;
+      }
+
+      const description = await window.showInputBox({
+        prompt: 'Enter a description for the link',
+        placeHolder: 'Example link',
+        ignoreFocusOut: true,
+        value: bookmark.description
+      });
+
+      bookmark.name = name;
+      bookmark.path = link;
+      bookmark.description = description;
+    } else {
+      const description = await window.showInputBox({
+        prompt: 'Enter a description for the file',
+        placeHolder: '',
+        ignoreFocusOut: true,
+        value: bookmark.description
+      });
+
+      bookmark.description = description;
+    }
+
+    await ext.setSetting(SETTING.bookmarks, items);
+
+    BookmarkView.update();
+  }
+  
+  private static async delete(e: BookmarkTreeItem) {
+    const ext = ExtensionService.getInstance();
+
+    const newBookmarks = BookmarkView.currentItems.filter(b => b.id !== e.id);
+    await ext.setSetting(SETTING.bookmarks, newBookmarks);
+
+    BookmarkView.update();
   }
 }
