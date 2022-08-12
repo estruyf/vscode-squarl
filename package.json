@@ -1,0 +1,119 @@
+{
+  "name": "vscode-squarl",
+  "displayName": "Squarl",
+  "description": "Bookmark manager for VS Code",
+  "publisher": "eliostruyf",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "squarl.addLink",
+        "title": "Bookmark link",
+        "category": "Squarl"
+      },
+      {
+        "command": "squarl.addFile",
+        "title": "Bookmark file",
+        "category": "Squarl"
+      }
+    ],
+    "configuration": {
+      "title": "Squarl Bookmarks",
+      "properties": {
+        "squarl.bookmarks": {
+          "markdownDescription": "The list of bookmarks",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the bookmark"
+              },
+              "path": {
+                "type": "string",
+                "description": "File path or link to the bookmark"
+              },
+              "lineColumn": {
+                "type": "number",
+                "description": "Line and column of the bookmark (optional)"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the bookmark (optional)"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "link",
+                  "file"
+                ],
+                "description": "Type of the bookmark (optional)"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "path"
+            ]
+          }
+        }
+      }
+    },
+    "viewsContainers": {
+			"activitybar": [
+				{
+					"id": "squarl-view",
+					"title": "Squarl",
+					"icon": "assets/logo/squarl.svg"
+				}
+			]
+		},
+    "views": {
+			"squarl-view": [
+				{
+					"id": "squarl-bookmarks",
+					"name": "Bookmarks"
+				}
+			]
+		}
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "eslint": "^8.20.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "ts-loader": "^9.3.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "@vscode/test-electron": "^2.1.5"
+  }
+}

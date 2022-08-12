@@ -1,0 +1,7 @@
+- Parse the absolute path of the file
+- Command to add a new bookmark
+- Command to delete a bookmark
+- Link an external file to populate the bookmarks (team bookmarks)
+- Support multiple workspaces
+- Windows filepath support
+- Show outdated file links
