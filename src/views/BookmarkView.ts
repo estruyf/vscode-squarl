@@ -1,4 +1,5 @@
-import { TreeItemCollapsibleState, Uri, window } from 'vscode';
+import { ThemeIcon } from 'vscode';
+import { TreeItemCollapsibleState, TreeView, Uri, window } from 'vscode';
 import { SETTING } from '../constants';
 import { Bookmark, BookmarkType } from '../models';
 import { BookmarkProvider, BookmarkTreeItem } from '../providers/BookmarkProvider';
@@ -6,23 +7,31 @@ import { ExtensionService } from './../services/ExtensionService';
 
 
 export class BookmarkView {
+  private static provider: BookmarkProvider;
+  private static tree: TreeView<BookmarkTreeItem>;
 
   public static async init() {
-    const bookmarks = await BookmarkView.getBookmarks();
+    await BookmarkView.bindBookmarks();
 
-    const bookmarkProvider = new BookmarkProvider(bookmarks);
+    BookmarkView.tree.onDidExpandElement(e => {
+      BookmarkView.provider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Expanded);
+    });
+    BookmarkView.tree.onDidCollapseElement(e => {
+      BookmarkView.provider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
+    });
+  }
 
-    const tree = window.createTreeView('squarl-bookmarks', {
-      treeDataProvider: bookmarkProvider,
+  public static async bindBookmarks() {
+    BookmarkView.provider = new BookmarkProvider();
+
+    BookmarkView.tree = window.createTreeView('squarl-bookmarks', {
+      treeDataProvider: BookmarkView.provider,
       showCollapseAll: true,
     });
+  }
 
-    tree.onDidExpandElement(e => {
-      bookmarkProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Expanded);
-    });
-    tree.onDidCollapseElement(e => {
-      bookmarkProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
-    });
+  public static async update() {
+    BookmarkView.provider.refresh();
   }
 
   /**
@@ -36,8 +45,8 @@ export class BookmarkView {
     const files = bookmarks.filter(b => b.type === BookmarkType.File).map(this.createBookmark);
     const links = bookmarks.filter(b => b.type === BookmarkType.Link).map(this.createBookmark);
 
-    const filesGroup = new BookmarkTreeItem('Files', undefined, await BookmarkProvider.getCollapsibleState('Files'), undefined, undefined, [...files]);
-	  const linksGroup = new BookmarkTreeItem('Links', undefined, await BookmarkProvider.getCollapsibleState('Links'), undefined, undefined, [...links]);
+    const filesGroup = new BookmarkTreeItem('Files', undefined, await BookmarkProvider.getCollapsibleState('Files'), new ThemeIcon(`files`), undefined, undefined, [...files]);
+	  const linksGroup = new BookmarkTreeItem('Links', undefined, await BookmarkProvider.getCollapsibleState('Links'), new ThemeIcon(`globe`), undefined, undefined, [...links]);
 
     return [filesGroup, linksGroup];
   }
@@ -52,6 +61,7 @@ export class BookmarkView {
       bookmark.name, 
       bookmark.description, 
       TreeItemCollapsibleState.None, 
+      undefined,
       bookmark.path,
       bookmark.type
     );

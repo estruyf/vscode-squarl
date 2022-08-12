@@ -1,14 +1,17 @@
 import { ExtensionService } from './../services/ExtensionService';
 import { join } from "path";
-import { Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
+import { BookmarkView } from '../views/BookmarkView';
 
 
 
 export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   private static readonly Collapsible_Key = `bookmarks.collapsibleStates`;
   private ext: ExtensionService;
-  public onDidChangeTreeData?: Event<void | BookmarkTreeItem | BookmarkTreeItem[] | null | undefined> | undefined;
+
+  private _onDidChangeTreeData = new EventEmitter<BookmarkTreeItem | void>()
+  public readonly onDidChangeTreeData: Event<void | BookmarkTreeItem> = this._onDidChangeTreeData.event;
 
   public static async getCollapsibleState(id: string) {
     const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(BookmarkProvider.Collapsible_Key) || {};
@@ -20,8 +23,14 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     return TreeItemCollapsibleState.Expanded;
   }
 
-  constructor(private bookmarks: BookmarkTreeItem[]) {
+  constructor() {
+  // constructor(private bookmarks: BookmarkTreeItem[]) {
     this.ext = ExtensionService.getInstance();
+  }
+
+  public refresh(): void {
+    // Triggers the getChildren method to refresh the view
+    this._onDidChangeTreeData.fire();
   }
 
   public async updateCollapsibleState(element: BookmarkTreeItem, collapsibleState: TreeItemCollapsibleState): Promise<void> {
@@ -36,14 +45,14 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     return element;
   }
   
-  public getChildren(element?: BookmarkTreeItem | undefined): ProviderResult<BookmarkTreeItem[]> {
-    if (element) {
+  public async getChildren(element?: BookmarkTreeItem | undefined): Promise<BookmarkTreeItem[]> {
+    if (!element) {
+      return await BookmarkView.getBookmarks();
+    } else {
       if (element.children) {
         return element.children;
       }
       return [];
-    } else {
-      return this.bookmarks;
     }
   }
 }
@@ -51,9 +60,10 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
 export class BookmarkTreeItem extends TreeItem {
   
   constructor(
-    public readonly label: string,
-    public readonly description: string | undefined,
-    public readonly collapsibleState: TreeItemCollapsibleState,
+    public label: string,
+    public description: string | undefined,
+    public collapsibleState: TreeItemCollapsibleState,
+    public iconPath: string | ThemeIcon | Uri | { light: string | Uri; dark: string | Uri; } | undefined,
     public path?: string,
     public type?: BookmarkType,
     public children?: BookmarkTreeItem[]
@@ -85,5 +95,13 @@ export class BookmarkTreeItem extends TreeItem {
     }
 
     this.tooltip = this.label;
+
+    const crntLabel = this.label;
+    const crntDescription = this.description;
+
+    if (crntDescription) {
+      this.label = crntDescription;
+      this.description = crntLabel
+    }
   }
 }

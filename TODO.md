@@ -5,3 +5,6 @@
 - Support multiple workspaces
 - Windows filepath support
 - Show outdated file links
+- Trigger tree view update
+- Add item actions to edit, delete
+- Update the treeview when the settings changes
