@@ -81,7 +81,7 @@ export class BookmarkView {
    * @param bookmark 
    * @returns 
    */
-  private static createBookmark(bookmark: Bookmark) {
+  public static createBookmark(bookmark: Bookmark) {
     return new BookmarkTreeItem(
       bookmark.id || v4(),
       bookmark.name, 

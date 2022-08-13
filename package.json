@@ -27,16 +27,22 @@
         "category": "Squarl"
       },
       {
-        "command": "squarl.editBookmark",
+        "command": "squarl.edit",
         "title": "Bookmark file",
         "category": "Squarl",
         "icon": "$(edit)"
       },
       {
-        "command": "squarl.deleteBookmark",
+        "command": "squarl.delete",
         "title": "Bookmark file",
         "category": "Squarl",
         "icon": "$(trash)"
+      },
+      {
+        "command": "squarl.search",
+        "title": "Search for a bookmark",
+        "category": "Squarl",
+        "icon": "$(search)"
       }
     ],
     "configuration": {
@@ -107,22 +113,29 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "squarl.editBookmark",
+          "command": "squarl.edit",
           "when": "false"
         },
         {
-          "command": "squarl.deleteBookmark",
+          "command": "squarl.delete",
           "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "squarl.search",
+          "when": "view == squarl-bookmarks",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "squarl.editBookmark",
+          "command": "squarl.edit",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
           "group": "inline@1"
         },
         {
-          "command": "squarl.deleteBookmark",
+          "command": "squarl.delete",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
           "group": "inline@1"
         }

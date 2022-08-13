@@ -1,9 +1,8 @@
-import { DeleteBookmarks } from './commands/DeleteBookmarks';
-import { EditBookmarks } from './commands/EditBookmarks';
 import { ExtensionContext } from "vscode";
-import { AddBookmarks } from "./commands/AddBookmarks";
 import { ExtensionService } from "./services/ExtensionService";
 import { BookmarkView } from "./views/BookmarkView";
+import { SettingsListener } from './listeners/SettingsListener';
+import { AddBookmarks, DeleteBookmarks, EditBookmarks, SearchBookmarks } from "./commands";
 
 
 export async function activate(context: ExtensionContext) {
@@ -16,6 +15,10 @@ export async function activate(context: ExtensionContext) {
 	AddBookmarks.registerCommands();
 	EditBookmarks.registerCommands();
 	DeleteBookmarks.registerCommands();
+	SearchBookmarks.registerCommands();
+
+	// Register all the listeners
+	SettingsListener.init();
 }
 
 // this method is called when your extension is deactivated

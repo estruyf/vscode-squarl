@@ -58,8 +58,10 @@ export class AddBookmarks {
 
   public static async addFile() {
     const editor = window.activeTextEditor;
+
     if (!editor) {
       Notifications.warning(`Didn't find an active file to add`);
+      return;
     }
     
     let path = editor.document.uri.fsPath;
