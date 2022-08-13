@@ -10,4 +10,7 @@ export const COMMAND = {
   deleteBookmark: `${EXTENSION_NAME}.delete`,
 
   searchBookmark: `${EXTENSION_NAME}.search`,
+  
+  moveUp: `${EXTENSION_NAME}.up`,
+  moveDown: `${EXTENSION_NAME}.down`,
 }

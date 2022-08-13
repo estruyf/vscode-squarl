@@ -39,6 +39,18 @@
         "icon": "$(trash)"
       },
       {
+        "command": "squarl.up",
+        "title": "Move up",
+        "category": "Squarl",
+        "icon": "$(chevron-up)"
+      },
+      {
+        "command": "squarl.down",
+        "title": "Move down",
+        "category": "Squarl",
+        "icon": "$(chevron-down)"
+      },
+      {
         "command": "squarl.search",
         "title": "Search for a bookmark",
         "category": "Squarl",
@@ -119,6 +131,15 @@
         {
           "command": "squarl.delete",
           "when": "false"
+        },
+
+        {
+          "command": "squarl.up",
+          "when": "false"
+        },
+        {
+          "command": "squarl.down",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -132,10 +153,20 @@
         {
           "command": "squarl.edit",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
-          "group": "inline@1"
+          "group": "inline@4"
         },
         {
           "command": "squarl.delete",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "inline@3"
+        },
+        {
+          "command": "squarl.up",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "inline@2"
+        },
+        {
+          "command": "squarl.down",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
           "group": "inline@1"
         }

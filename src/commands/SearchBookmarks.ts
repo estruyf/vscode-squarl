@@ -1,9 +1,12 @@
-import { commands, window } from "vscode";
+import { commands, QuickPickItem, window } from "vscode";
 import { COMMAND } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
 import { BookmarkView } from "../views/BookmarkView";
 
+interface SearchItem extends QuickPickItem {
+  id: string;
+}
 
 export class SearchBookmarks {
 
@@ -23,10 +26,12 @@ export class SearchBookmarks {
       allBookmarks.map(b => ({
         label: b.name,
         description: b.description,
+        detail: b.path,
         id: b.id
-      })), {
+      } as SearchItem)), {
         placeHolder: "Search bookmarks",
-        matchOnDescription: true
+        matchOnDescription: true,
+        matchOnDetail: true,
       });
 
     if (!answer) {
