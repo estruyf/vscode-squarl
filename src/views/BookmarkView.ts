@@ -28,7 +28,7 @@ export class BookmarkView {
 
     BookmarkView.tree = window.createTreeView('squarl-bookmarks', {
       treeDataProvider: BookmarkView.provider,
-      showCollapseAll: true,
+      showCollapseAll: true
     });
   }
 

@@ -9,6 +9,9 @@
 - Import bookmarks from a file
 - Groups
 - Sorting by name or manual sorting
+- https://code.visualstudio.com/updates/v1_70#_webview-context-menus
+- https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content
+- Add explorer item right click context menu
 
 ## Features
 

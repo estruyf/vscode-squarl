@@ -1,6 +1,6 @@
 import { ExtensionService } from './../services/ExtensionService';
 import { join } from "path";
-import { Event, EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
 import { BookmarkView } from '../views/BookmarkView';
 

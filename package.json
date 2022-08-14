@@ -28,13 +28,13 @@
       },
       {
         "command": "squarl.edit",
-        "title": "Bookmark file",
+        "title": "Edit",
         "category": "Squarl",
         "icon": "$(edit)"
       },
       {
         "command": "squarl.delete",
-        "title": "Bookmark file",
+        "title": "Delete",
         "category": "Squarl",
         "icon": "$(trash)"
       },
@@ -150,6 +150,26 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "squarl.up",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "1_move@1"
+        },
+        {
+          "command": "squarl.down",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "1_move@2"
+        },
+        {
+          "command": "squarl.edit",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "2_modify@3"
+        },
+        {
+          "command": "squarl.delete",
+          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "group": "2_modify@4"
+        },
         {
           "command": "squarl.edit",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
