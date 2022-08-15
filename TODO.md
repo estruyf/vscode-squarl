@@ -13,6 +13,13 @@
 - https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content
 - Add explorer item right click context menu
 
+## In progess
+
+- Edit group
+  - Update name
+- Delete group
+  - Delete the references
+
 ## Features
 
 - Add file bookmarks
@@ -29,3 +36,8 @@
 - Trigger tree view update
 - Command to add a new bookmark
 - Command to delete a bookmark
+
+- Group creation
+- Group assign
+  - Add the group to the bookmark item
+  - Create a listener for updating the context of the bookmark assign command

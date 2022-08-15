@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 import { ThemeIcon } from 'vscode';
 import { TreeItemCollapsibleState, TreeView, Uri, window } from 'vscode';
 import { SETTING } from '../constants';
-import { Bookmark, BookmarkType } from '../models';
+import { Bookmark, BookmarkType, Group } from '../models';
 import { BookmarkProvider, BookmarkTreeItem } from '../providers/BookmarkProvider';
 import { ExtensionService } from './../services/ExtensionService';
 
@@ -11,6 +11,7 @@ export class BookmarkView {
   private static provider: BookmarkProvider;
   private static tree: TreeView<BookmarkTreeItem>;
   public static currentItems: Bookmark[];
+  public static currentTreeItems: BookmarkTreeItem[];
 
   public static async init() {
     await BookmarkView.bindBookmarks();
@@ -42,38 +43,45 @@ export class BookmarkView {
    */
   public static async getBookmarks() {
     const ext = ExtensionService.getInstance();
+    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
     const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
 
     this.currentItems = bookmarks.map(b => ({...b, id: b.id || v4()}));
     
-    const files = this.currentItems.filter(b => b.type === BookmarkType.File).map(this.createBookmark);
-    const links = this.currentItems.filter(b => b.type === BookmarkType.Link).map(this.createBookmark);
+    this.currentTreeItems = [
+      ...this.currentItems.filter(b => !b.groupId).map(this.createBookmark)
+    ];
 
-    const filesGroup = new BookmarkTreeItem(
-      'group.files',
-      'Files', 
-      undefined, 
-      await BookmarkProvider.getCollapsibleState('Files'), 
-      new ThemeIcon(`files`),
-      undefined,
-      undefined,
-      undefined, 
-      [...files]
-    );
+    const groupAndItems = this.currentItems.filter(b => b.groupId);
+    for (const bookmark of groupAndItems) {
+      let groupItem = this.currentTreeItems.find(c => c.id === `group.${bookmark.groupId}`);
+      
+      if (!groupItem) {
+        const groupName = groups.find(g => g.id === bookmark.groupId)?.name || bookmark.groupId as string;
+        const groupId = `group.${bookmark.groupId}`;
+        groupItem = new BookmarkTreeItem(
+          groupId,
+          groupName, 
+          undefined, 
+          await BookmarkProvider.getCollapsibleState(groupId), 
+          undefined,
+          undefined,
+          undefined,
+          "group", 
+          []
+        );
 
-	  const linksGroup = new BookmarkTreeItem(
-      'group.links',
-      'Links',
-      undefined,
-      await BookmarkProvider.getCollapsibleState('Links'),
-      new ThemeIcon(`globe`),
-      undefined,
-      undefined,
-      undefined,
-      [...links]
-    );
+        this.currentTreeItems.push(groupItem);
+      }
 
-    return [filesGroup, linksGroup];
+      if (!groupItem.children) {
+        groupItem.children = [];
+      }
+
+      groupItem.children.push(this.createBookmark(bookmark));
+    }
+
+    return [...this.currentTreeItems];
   }
 
   /**

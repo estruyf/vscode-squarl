@@ -2,6 +2,7 @@ import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { BookmarkType } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
+import { selectGroupQuestion } from "../questions";
 import { ExtensionService } from "../services/ExtensionService";
 import { BookmarkView } from "../views/BookmarkView";
 
@@ -68,6 +69,13 @@ export class EditBookmarks {
       });
 
       bookmark.description = description;
+    }
+
+    const groupId = await selectGroupQuestion(bookmark.groupId);
+    if (groupId) {
+      bookmark.groupId = groupId;
+    } else {
+      delete bookmark.groupId;
     }
 
     await ext.setSetting(SETTING.bookmarks, items);

@@ -55,11 +55,62 @@
         "title": "Search for a bookmark",
         "category": "Squarl",
         "icon": "$(search)"
+      },
+      {
+        "command": "squarl.createGroup",
+        "title": "Create a bookmark group",
+        "category": "Squarl",
+        "icon": "$(group-by-ref-type)"
+      },
+      {
+        "command": "squarl.assignGroup",
+        "title": "Assign group",
+        "category": "Squarl",
+        "icon": "$(group-by-ref-type)"
+      },
+      {
+        "command": "squarl.editGroup",
+        "title": "Edit group",
+        "category": "Squarl",
+        "icon": "$(pencil)"
+      },
+      {
+        "command": "squarl.deleteGroup",
+        "title": "Delete group",
+        "category": "Squarl",
+        "icon": "$(trash)"
       }
     ],
     "configuration": {
       "title": "Squarl Bookmarks",
       "properties": {
+        "squarl.groups": {
+          "markdownDescription": "The list of groups you want to use",
+          "type": "array",
+          "default": [],
+          "examples": [{
+            "id": "",
+            "name": ""
+          }],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of the group."
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the group."
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        },
         "squarl.bookmarks": {
           "markdownDescription": "The list of bookmarks",
           "type": "array",
@@ -94,6 +145,10 @@
                   "file"
                 ],
                 "description": "Type of the bookmark (optional)"
+              },
+              "groupId": {
+                "type": "string",
+                "description": "ID of the group (optional)"
               }
             },
             "additionalProperties": false,
@@ -140,13 +195,30 @@
         {
           "command": "squarl.down",
           "when": "false"
+        },
+        {
+          "command": "squarl.assignGroup",
+          "when": "false"
+        },
+        {
+          "command": "squarl.editGroup",
+          "when": "false"
+        },
+        {
+          "command": "squarl.deleteGroup",
+          "when": "false"
         }
       ],
       "view/title": [
         {
+          "command": "squarl.createGroup",
+          "when": "view == squarl-bookmarks",
+          "group": "navigation@1"
+        },
+        {
           "command": "squarl.search",
           "when": "view == squarl-bookmarks",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -161,24 +233,29 @@
           "group": "1_move@2"
         },
         {
-          "command": "squarl.edit",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
-          "group": "2_modify@3"
-        },
-        {
-          "command": "squarl.delete",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
-          "group": "2_modify@4"
+          "command": "squarl.assignGroup",
+          "when": "view == squarl-bookmarks && viewItem == bookmark && squarl:hasgroups",
+          "group": "2_groupy@1"
         },
         {
           "command": "squarl.edit",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
-          "group": "inline@4"
+          "group": "3_modify@3"
         },
         {
           "command": "squarl.delete",
           "when": "view == squarl-bookmarks && viewItem == bookmark",
-          "group": "inline@3"
+          "group": "3_modify@4"
+        },
+        {
+          "command": "squarl.editGroup",
+          "when": "view == squarl-bookmarks && viewItem == group",
+          "group": "3_modify@3"
+        },
+        {
+          "command": "squarl.deleteGroup",
+          "when": "view == squarl-bookmarks && viewItem == group",
+          "group": "3_modify@4"
         },
         {
           "command": "squarl.up",

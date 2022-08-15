@@ -1,11 +1,12 @@
 import { BookmarkType } from ".";
 
 export interface Bookmark {
-  id?: string;
   name: string;
   path: string;
+  type: BookmarkType;
 
+  id?: string;
   description?: string;
   lineColumn?: string;
-  type: BookmarkType;
+  groupId?: string;
 }

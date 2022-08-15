@@ -1,3 +1,4 @@
+import { QuickPickItem } from 'vscode';
 import { Notifications } from './../services/Notifications';
 import { BookmarkView } from './../views/BookmarkView';
 import { Bookmark } from './../models/Bookmark';
@@ -5,8 +6,9 @@ import { SETTING } from './../constants/Settings';
 import { COMMAND } from './../constants/Commands';
 import { commands, window } from 'vscode';
 import { ExtensionService } from './../services/ExtensionService';
-import { BookmarkType } from '../models';
+import { BookmarkType, Group } from '../models';
 import { parse, relative } from 'path';
+import { selectGroupQuestion } from '../questions';
 
 
 export class AddBookmarks {
@@ -23,7 +25,7 @@ export class AddBookmarks {
     );
   }
 
-  public static async addLink() {
+  public static async addLink() {    
     const link = await window.showInputBox({
       prompt: 'Enter the link to add',
       placeHolder: 'https://example.com',
@@ -51,7 +53,9 @@ export class AddBookmarks {
       ignoreFocusOut: true,
     });
 
-    AddBookmarks.add(name, link, description || "", BookmarkType.Link);
+    const groupId = await selectGroupQuestion();
+
+    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId);
 
     BookmarkView.update();
   }
@@ -88,22 +92,30 @@ export class AddBookmarks {
       value: fileName
     });
 
-    AddBookmarks.add(fileName, path, description || "", BookmarkType.File);
+    const groupId = await selectGroupQuestion();
+
+    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId);
 
     BookmarkView.update();
   }
 
-  private static async add(name: string, path: string, description: string, type: BookmarkType) {
+  private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string) {
     const ext = ExtensionService.getInstance();
 
     const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
 
-    bookmarks.push({
+    const newBookmark: Bookmark = {
       name,
       path,
       description,
       type
-    } as Bookmark);
+    };
+
+    if (groupId) {
+      newBookmark.groupId = groupId;
+    }
+
+    bookmarks.push(newBookmark);
 
     ext.setSetting(SETTING.bookmarks, bookmarks);
   }

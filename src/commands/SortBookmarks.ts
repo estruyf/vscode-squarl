@@ -36,7 +36,7 @@ export class SortBookmarks {
     const clonedItem = Object.assign({}, crntItem);
     let itemAdded = false;
     for (let i = index - 1; i >= 0; i--) {
-      if (newBookmarks[i].type === clonedItem.type) {
+      if (newBookmarks[i].groupId === clonedItem.groupId) {
         newBookmarks.splice(i, 0, clonedItem);
         itemAdded = true;
         break;
@@ -76,7 +76,7 @@ export class SortBookmarks {
       if (!newBookmarks[i]) {
         newBookmarks.splice(i, 0, clonedItem);
         break;
-      } else if (newBookmarks[i].type === clonedItem.type) {
+      } else if (newBookmarks[i].groupId === clonedItem.groupId) {
         newBookmarks.splice(i, 0, clonedItem);
         break;
       }
