@@ -1,5 +1,5 @@
+import { ExtensionService } from './ExtensionService';
 import { window } from "vscode";
-import { EXTENSION_NAME } from "../constants";
 import { Logger } from "./Logger";
 
 
@@ -7,21 +7,24 @@ export class Notifications {
   private static notifications: string[] = [];
 
   public static info(message: string, ...items: any): Thenable<string | undefined> {
-    Logger.info(`${EXTENSION_NAME}: ${message}`, "INFO");
+    const ext = ExtensionService.getInstance();
+    Logger.info(`${ext.displayName}: ${message}`, "INFO");
 
-    return window.showInformationMessage(`${EXTENSION_NAME}: ${message}`, ...items);
+    return window.showInformationMessage(`${ext.displayName}: ${message}`, ...items);
   }
 
   public static warning(message: string, ...items: any): Thenable<string | undefined> {
-    Logger.info(`${EXTENSION_NAME}: ${message}`, "WARNING");
+    const ext = ExtensionService.getInstance();
+    Logger.info(`${ext.displayName}: ${message}`, "WARNING");
 
-    return window.showWarningMessage(`${EXTENSION_NAME}: ${message}`, ...items);
+    return window.showWarningMessage(`${ext.displayName}: ${message}`, ...items);
   }
 
   public static error(message: string, ...items: any): Thenable<string | undefined> {
-    Logger.info(`${EXTENSION_NAME}: ${message}`, "ERROR");
+    const ext = ExtensionService.getInstance();
+    Logger.info(`${ext.displayName}: ${message}`, "ERROR");
 
-    return window.showErrorMessage(`${EXTENSION_NAME}: ${message}`, ...items);
+    return window.showErrorMessage(`${ext.displayName}: ${message}`, ...items);
   }
 
   public static async errorShowOnce(message: string, ...items: any): Promise<string | undefined> {

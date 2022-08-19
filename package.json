@@ -3,7 +3,33 @@
   "displayName": "Squarl",
   "description": "Bookmark manager for VS Code",
   "publisher": "eliostruyf",
+  "icon": "assets/logo/squarl-128x128.png",
   "version": "0.0.1",
+  "badges": [
+    {
+      "description": "version",
+      "url": "https://img.shields.io/github/package-json/v/estruyf/vscode-squarl?color=green&label=vscode-squarl&style=flat-square",
+      "href": "https://github.com/estruyf/vscode-squarl"
+    },
+    {
+      "description": "Buy me a coffee",
+      "url": "https://img.shields.io/badge/Buy%20me%20a%20coffee-€%203-blue?logo=buy-me-a-coffee&style=flat-square",
+      "href": "https://www.buymeacoffee.com/zMeFRy9"
+    }
+  ],
+  "license": "MIT",
+  "author": "Elio Struyf <elio@struyfconsulting.be> (https://www.eliostruyf.com)",
+  "sponsor": {
+    "url": "https://github.com/sponsors/estruyf"
+  },
+  "homepage": "https://github.com/estruyf/vscode-squarl",
+  "bugs": {
+    "url": "https://github.com/estruyf/vscode-squarl/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/estruyf/vscode-squarl"
+  },
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -11,71 +37,75 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:squarl.bookmark.addLink",
+    "onCommand:squarl.bookmark.addFile",
+    "onCommand:squarl.bookmark.search",
+    "onView:squarl.view.personal",
+    "onView:squarl.view.team"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "squarl.addLink",
+        "command": "squarl.bookmark.addLink",
         "title": "Bookmark link",
         "category": "Squarl"
       },
       {
-        "command": "squarl.addFile",
+        "command": "squarl.bookmark.addFile",
         "title": "Bookmark file",
         "category": "Squarl"
       },
       {
-        "command": "squarl.edit",
+        "command": "squarl.bookmark.edit",
         "title": "Edit",
         "category": "Squarl",
         "icon": "$(edit)"
       },
       {
-        "command": "squarl.delete",
+        "command": "squarl.bookmark.delete",
         "title": "Delete",
         "category": "Squarl",
         "icon": "$(trash)"
       },
       {
-        "command": "squarl.up",
+        "command": "squarl.sort.up",
         "title": "Move up",
         "category": "Squarl",
         "icon": "$(chevron-up)"
       },
       {
-        "command": "squarl.down",
+        "command": "squarl.sort.down",
         "title": "Move down",
         "category": "Squarl",
         "icon": "$(chevron-down)"
       },
       {
-        "command": "squarl.search",
+        "command": "squarl.bookmark.search",
         "title": "Search for a bookmark",
         "category": "Squarl",
         "icon": "$(search)"
       },
       {
-        "command": "squarl.createGroup",
+        "command": "squarl.group.create",
         "title": "Create a bookmark group",
         "category": "Squarl",
         "icon": "$(group-by-ref-type)"
       },
       {
-        "command": "squarl.assignGroup",
+        "command": "squarl.group.assign",
         "title": "Assign group",
         "category": "Squarl",
         "icon": "$(group-by-ref-type)"
       },
       {
-        "command": "squarl.editGroup",
+        "command": "squarl.group.edit",
         "title": "Edit group",
         "category": "Squarl",
         "icon": "$(pencil)"
       },
       {
-        "command": "squarl.deleteGroup",
+        "command": "squarl.group.delete",
         "title": "Delete group",
         "category": "Squarl",
         "icon": "$(trash)"
@@ -118,10 +148,6 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "description": "ID of the bookmark. If not set, this will be generated automatically by the extension."
-              },
               "name": {
                 "type": "string",
                 "description": "Name of the bookmark"
@@ -172,99 +198,116 @@
     "views": {
       "squarl-view": [
         {
-          "id": "squarl-bookmarks",
+          "id": "squarl.view.personal",
           "name": "Bookmarks"
+        },
+        {
+          "id": "squarl.view.team",
+          "name": "Team Bookmarks",
+          "when": "squarl:hasTeamFile"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "squarl.view.personal",
+        "contents": "Get started by adding some bookmarks to your project.\n[Add link](command:squarl.bookmark.addLink)\n[Add file](command:squarl.bookmark.addFile)"
+      }
+    ],
     "menus": {
       "commandPalette": [
         {
-          "command": "squarl.edit",
+          "command": "squarl.bookmark.edit",
           "when": "false"
         },
         {
-          "command": "squarl.delete",
-          "when": "false"
-        },
-
-        {
-          "command": "squarl.up",
+          "command": "squarl.bookmark.delete",
           "when": "false"
         },
         {
-          "command": "squarl.down",
+          "command": "squarl.sort.up",
           "when": "false"
         },
         {
-          "command": "squarl.assignGroup",
+          "command": "squarl.sort.down",
           "when": "false"
         },
         {
-          "command": "squarl.editGroup",
+          "command": "squarl.group.assign",
           "when": "false"
         },
         {
-          "command": "squarl.deleteGroup",
+          "command": "squarl.group.edit",
+          "when": "false"
+        },
+        {
+          "command": "squarl.group.delete",
           "when": "false"
         }
       ],
       "view/title": [
         {
-          "command": "squarl.createGroup",
-          "when": "view == squarl-bookmarks",
+          "command": "squarl.group.create",
+          "when": "view == squarl.view.personal",
           "group": "navigation@1"
         },
         {
-          "command": "squarl.search",
-          "when": "view == squarl-bookmarks",
+          "command": "squarl.bookmark.search",
+          "when": "view == squarl.view.personal",
           "group": "navigation@2"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "squarl.bookmark.addFile",
+          "group": "squarl",
+          "when": "explorerResourceIsFolder == false"
         }
       ],
       "view/item/context": [
         {
-          "command": "squarl.up",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.sort.up",
+          "when": "view == squarl.view.personal && viewItem =~ /bookmark|group/",
           "group": "1_move@1"
         },
         {
-          "command": "squarl.down",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.sort.down",
+          "when": "view == squarl.view.personal && viewItem =~ /bookmark|group/",
           "group": "1_move@2"
         },
         {
-          "command": "squarl.assignGroup",
-          "when": "view == squarl-bookmarks && viewItem == bookmark && squarl:hasgroups",
+          "command": "squarl.group.assign",
+          "when": "view == squarl.view.personal && viewItem == bookmark && squarl:hasgroups",
           "group": "2_groupy@1"
         },
         {
-          "command": "squarl.edit",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.bookmark.edit",
+          "when": "view == squarl.view.personal && viewItem == bookmark",
           "group": "3_modify@3"
         },
         {
-          "command": "squarl.delete",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.bookmark.delete",
+          "when": "view == squarl.view.personal && viewItem =~ /bookmark|deletedBookmark/",
           "group": "3_modify@4"
         },
         {
-          "command": "squarl.editGroup",
-          "when": "view == squarl-bookmarks && viewItem == group",
+          "command": "squarl.group.edit",
+          "when": "view == squarl.view.personal && viewItem == group",
           "group": "3_modify@3"
         },
         {
-          "command": "squarl.deleteGroup",
-          "when": "view == squarl-bookmarks && viewItem == group",
+          "command": "squarl.group.delete",
+          "when": "view == squarl.view.personal && viewItem == group",
           "group": "3_modify@4"
         },
         {
-          "command": "squarl.up",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.sort.up",
+          "when": "view == squarl.view.personal && viewItem =~ /^bookmark|group?$/",
           "group": "inline@2"
         },
         {
-          "command": "squarl.down",
-          "when": "view == squarl-bookmarks && viewItem == bookmark",
+          "command": "squarl.sort.down",
+          "when": "view == squarl.view.personal && viewItem =~ /^bookmark|group?$/",
           "group": "inline@1"
         }
       ]

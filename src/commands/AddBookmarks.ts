@@ -1,4 +1,4 @@
-import { QuickPickItem } from 'vscode';
+import { QuickPickItem, Uri } from 'vscode';
 import { Notifications } from './../services/Notifications';
 import { BookmarkView } from './../views/BookmarkView';
 import { Bookmark } from './../models/Bookmark';
@@ -9,6 +9,7 @@ import { ExtensionService } from './../services/ExtensionService';
 import { BookmarkType, Group } from '../models';
 import { parse, relative } from 'path';
 import { selectGroupQuestion } from '../questions';
+import { saveBookmarks } from '../utils/SaveBookmarks';
 
 
 export class AddBookmarks {
@@ -55,20 +56,29 @@ export class AddBookmarks {
 
     const groupId = await selectGroupQuestion();
 
-    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId);
-
-    BookmarkView.update();
+    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId);    
   }
 
-  public static async addFile() {
-    const editor = window.activeTextEditor;
+  public static async addFile(file?: Uri) {
+    let path: string;
 
-    if (!editor) {
-      Notifications.warning(`Didn't find an active file to add`);
+    if (!file) {
+      const editor = window.activeTextEditor;
+
+      if (!editor) {
+        Notifications.warning(`Didn't find an active file to add`);
+        return;
+      }
+
+      path = editor.document.uri.fsPath;
+    } else {
+      path = file.fsPath;
+    }
+
+    if (!path) {
       return;
     }
-    
-    let path = editor.document.uri.fsPath;
+
     // Get filename from path
     const fileParse = parse(path);
     const fileName = `${fileParse.name}${fileParse.ext}`;
@@ -83,20 +93,19 @@ export class AddBookmarks {
     const bookmarks = BookmarkView.currentItems;
     if (bookmarks.find(b => b.path === path)) {
       Notifications.warning(`File already added`);
+      return;
     }
 
     const description = await window.showInputBox({
       prompt: 'Enter a description for the file',
       placeHolder: '',
-      ignoreFocusOut: true,
+      ignoreFocusOut: false,
       value: fileName
     });
 
     const groupId = await selectGroupQuestion();
 
-    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId);
-
-    BookmarkView.update();
+    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId);    
   }
 
   private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string) {
@@ -117,7 +126,7 @@ export class AddBookmarks {
 
     bookmarks.push(newBookmark);
 
-    ext.setSetting(SETTING.bookmarks, bookmarks);
+    await saveBookmarks(bookmarks);
   }
   
 }

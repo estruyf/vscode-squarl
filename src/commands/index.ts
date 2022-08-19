@@ -6,4 +6,4 @@ export * from './DeleteGroup';
 export * from './EditBookmarks';
 export * from './EditGroup';
 export * from './SearchBookmarks';
-export * from './SortBookmarks';
+export * from './Sorting';

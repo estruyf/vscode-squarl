@@ -2,6 +2,7 @@ import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
+import { saveBookmarks } from "../utils/SaveBookmarks";
 import { BookmarkView } from "../views/BookmarkView";
 
 
@@ -28,8 +29,6 @@ export class DeleteBookmarks {
     }
 
     const newBookmarks = BookmarkView.currentItems.filter(b => b.id !== e.id);
-    await ext.setSetting(SETTING.bookmarks, newBookmarks);
-
-    BookmarkView.update();
+    await saveBookmarks(newBookmarks);
   }
 }

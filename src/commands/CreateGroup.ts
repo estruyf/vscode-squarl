@@ -2,6 +2,7 @@ import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { Group } from "../models";
 import { ExtensionService } from "../services/ExtensionService";
+import { createGroupId } from "../utils/CreateGroupId";
 
 
 export class CreateGroup {
@@ -26,7 +27,7 @@ export class CreateGroup {
       validateInput: (value: string) => {
         if (!value) {
           return "Please define a name for the group";
-        } else if (groups.find(g => g.id === CreateGroup.createId(value))) {
+        } else if (groups.find(g => g.id === createGroupId(value))) {
           return "A group with this name already exists";
         } else {
           return "";
@@ -39,14 +40,10 @@ export class CreateGroup {
     }
 
     groups.push({
-      id: CreateGroup.createId(name),
+      id: createGroupId(name),
       name
     });
 
     ext.setSetting(SETTING.groups, groups);
-  }
-
-  private static createId(value: string) {
-    return value.toLowerCase().replace(/ /g, '-');
   }
 }

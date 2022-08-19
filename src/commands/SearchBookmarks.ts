@@ -20,25 +20,38 @@ export class SearchBookmarks {
   }
 
   private static async search(e: BookmarkTreeItem) {
-    const allBookmarks = BookmarkView.currentItems;
+    const personalBookmarks = BookmarkView.currentItems;
+    const teamBookmarks = await BookmarkView.currentTeamItems();
 
-    const answer = await window.showQuickPick(
-      allBookmarks.map(b => ({
-        label: b.name,
+    const allSearchItems = [
+      ...personalBookmarks.map(b => ({
+        label: `$(person) ${b.name}`,
         description: b.description,
         detail: b.path,
         id: b.id
-      } as SearchItem)), {
+      } as SearchItem)),
+      ...(teamBookmarks || []).map(b => ({
+        label: `$(organization) ${b.name}`,
+        description: b.description,
+        detail: b.path,
+        id: b.id
+      } as SearchItem))
+    ]
+
+    const answer = await window.showQuickPick(
+      allSearchItems, 
+      {
         placeHolder: "Search bookmarks",
         matchOnDescription: true,
         matchOnDetail: true,
-      });
+      }
+    );
 
     if (!answer) {
       return;
     }
 
-    const selectedBookmark = allBookmarks.find(b => b.id === answer.id);
+    const selectedBookmark = [...personalBookmarks, ...(teamBookmarks || [])].find(b => b.id === answer.id);
     if (!selectedBookmark) {
       return;
     }

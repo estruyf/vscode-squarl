@@ -4,6 +4,7 @@ import { BookmarkType } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { selectGroupQuestion } from "../questions";
 import { ExtensionService } from "../services/ExtensionService";
+import { saveBookmarks } from "../utils/SaveBookmarks";
 import { BookmarkView } from "../views/BookmarkView";
 
 
@@ -78,8 +79,6 @@ export class EditBookmarks {
       delete bookmark.groupId;
     }
 
-    await ext.setSetting(SETTING.bookmarks, items);
-
-    BookmarkView.update();
+    await saveBookmarks(items);
   }
 }

@@ -1,3 +1,4 @@
+import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
 import { join } from "path";
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
@@ -23,7 +24,7 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     return TreeItemCollapsibleState.Expanded;
   }
 
-  constructor() {
+  constructor(private isTeam: boolean = false) {
   // constructor(private bookmarks: BookmarkTreeItem[]) {
     this.ext = ExtensionService.getInstance();
   }
@@ -47,13 +48,22 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   
   public async getChildren(element?: BookmarkTreeItem | undefined): Promise<BookmarkTreeItem[]> {
     if (!element) {
-      return await BookmarkView.getBookmarks();
+      if (this.isTeam) {
+        const teamBookmarks = await BookmarkView.getTeamBookmarks();
+        if (teamBookmarks) {
+          return teamBookmarks;
+        }
+      } else {
+        return await BookmarkView.getBookmarks();
+      }
     } else {
       if (element.children) {
         return element.children;
       }
       return [];
     }
+
+    return [];
   }
 }
 
@@ -73,13 +83,7 @@ export class BookmarkTreeItem extends TreeItem {
     super(label, collapsibleState);
 
     if (type === BookmarkType.File && path) {
-      const wsFolder = ExtensionService.getInstance().getWorkspaceFolder();
-      let fileResourcePath = Uri.parse(path);
-
-      if (wsFolder) {
-        fileResourcePath = Uri.file(join(wsFolder.fsPath, path));
-      }
-
+      const fileResourcePath = toAbsPath(path);
       this.resourceUri = fileResourcePath;
     } else if (type === BookmarkType.Link && path) {
       this.resourceUri = Uri.parse(path);

@@ -3,8 +3,8 @@ import { AssignGroup } from './commands/AssignGroup';
 import { ExtensionContext } from "vscode";
 import { ExtensionService } from "./services/ExtensionService";
 import { BookmarkView } from "./views/BookmarkView";
-import { SettingsListener } from './listeners/SettingsListener';
-import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, SortBookmarks } from "./commands";
+import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting } from "./commands";
+import { SettingsListener, TeamSettingsListener } from './listeners';
 
 
 export async function activate(context: ExtensionContext) {
@@ -18,14 +18,15 @@ export async function activate(context: ExtensionContext) {
 	EditBookmarks.registerCommands();
 	DeleteBookmarks.registerCommands();
 	SearchBookmarks.registerCommands();
-	SortBookmarks.registerCommands();
 	CreateGroup.registerCommands();
 	AssignGroup.registerCommands();
 	EditGroup.registerCommands();
 	DeleteGroup.registerCommands();
+	Sorting.registerCommands();
 
 	// Register all the listeners
 	SettingsListener.init();
+	TeamSettingsListener.init();
 }
 
 // this method is called when your extension is deactivated

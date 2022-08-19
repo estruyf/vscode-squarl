@@ -9,4 +9,5 @@ export interface Bookmark {
   description?: string;
   lineColumn?: string;
   groupId?: string;
+  isDeleted?: boolean;
 }

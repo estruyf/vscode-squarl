@@ -6,6 +6,7 @@ import { Group } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
 import { selectGroupQuestion } from '../questions';
+import { saveBookmarks } from '../utils/SaveBookmarks';
 
 
 export class AssignGroup {
@@ -46,7 +47,7 @@ export class AssignGroup {
         delete bookmark.groupId;
       }
 
-      await ext.setSetting(SETTING.bookmarks, bookmarks);
+      await saveBookmarks(bookmarks);
     }
   }
 }
