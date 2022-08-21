@@ -1,3 +1,4 @@
+import { BookmarkViewType } from './../models/BookmarkViewType';
 import { hasTeamFile } from './../utils/HasTeamFile';
 import { CONTEXT_KEY } from './../constants/ContextKeys';
 import { DefaultGroup } from './../constants/DefaultGroups';
@@ -89,8 +90,8 @@ export class BookmarkView {
     }
   }
 
-  public static async update(type: "personal" | "team") {
-    if (type === "personal") {
+  public static async update(type: BookmarkViewType) {
+    if (type === BookmarkViewType.personal) {
       BookmarkView.provider.refresh();
     } else {
       if (BookmarkView.teamProvider) {
@@ -101,8 +102,8 @@ export class BookmarkView {
     }
   }
 
-  public static async close(type: "personal" | "team") {
-    if (type === "personal") {
+  public static async close(type: BookmarkViewType) {
+    if (type === BookmarkViewType.personal) {
       BookmarkView.tree.dispose();
     } else {
       BookmarkView.teamTree?.dispose();
@@ -131,7 +132,7 @@ export class BookmarkView {
       const groupItems = this._currentItems.filter(b => b.groupId === group.id && !b.isDeleted);
 
       if (groupItems.length > 0) {
-        const groupItem = await this.groupBookmarks(group, groupItems);
+        const groupItem = await this.groupBookmarks(group, groupItems, BookmarkViewType.personal);
         if (groupItem) {
           this.currentTreeItems.push(groupItem);
         }
@@ -141,7 +142,7 @@ export class BookmarkView {
     // Deleted files
     const deletedFiles = this._currentItems.filter(b => b.isDeleted);
     if (deletedFiles.length > 0) {
-      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, new ThemeIcon("trash"), "deleted");
+      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, BookmarkViewType.personal, new ThemeIcon("trash"), "deleted");
       if (groupItem) {
         this.currentTreeItems.push(groupItem);
       }
@@ -161,6 +162,10 @@ export class BookmarkView {
       return;
     }
 
+    if (teamFileData.name && BookmarkView.teamTree) {
+      BookmarkView.teamTree.title = teamFileData.name;
+    }
+
     this._currentTeamItems = BookmarkView.processBookmarks(teamFileData.bookmarks || []);
     
     this.currentTeamTreeItems = [
@@ -172,7 +177,7 @@ export class BookmarkView {
       const groupItems = this._currentTeamItems.filter(b => b.groupId === group.id && !b.isDeleted);
 
       if (groupItems.length > 0) {
-        const groupItem = await this.groupBookmarks(group, groupItems);
+        const groupItem = await this.groupBookmarks(group, groupItems, BookmarkViewType.team);
         if (groupItem) {
           this.currentTeamTreeItems.push(groupItem);
         }
@@ -182,7 +187,7 @@ export class BookmarkView {
     // Deleted files
     const deletedFiles = this._currentTeamItems.filter(b => b.isDeleted);
     if (deletedFiles.length > 0) {
-      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, new ThemeIcon("trash"), "deleted");
+      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, BookmarkViewType.team, new ThemeIcon("trash"), "deleted");
       if (groupItem) {
         this.currentTeamTreeItems.push(groupItem);
       }
@@ -194,9 +199,18 @@ export class BookmarkView {
   /**
    * Group bookmarks
    */
-  public static async groupBookmarks(group: Group, items: Bookmark[], icon?: ThemeIcon, contextValue?: string): Promise<BookmarkTreeItem> {
+  public static async groupBookmarks(
+    group: Group, 
+    items: Bookmark[],
+    type: BookmarkViewType,
+    icon?: ThemeIcon, 
+    contextValue?: string
+  ): Promise<BookmarkTreeItem> {
     const groupId =`group.${group.id}`;
-    let groupItem = this.currentTreeItems.find(c => c.id === groupId);
+    let groupItem = 
+      type === BookmarkViewType.personal ? 
+        this.currentTreeItems.find(c => c.id === groupId) :
+        this.currentTeamTreeItems.find(c => c.id === groupId);
 
     if (!groupItem) {
       const groupName = group.name || group.id;
@@ -204,7 +218,7 @@ export class BookmarkView {
         groupId,
         groupName, 
         undefined, 
-        await BookmarkProvider.getCollapsibleState(groupId), 
+        await BookmarkProvider.getCollapsibleState(groupId, type), 
         icon,
         undefined,
         undefined,
@@ -235,7 +249,7 @@ export class BookmarkView {
       bookmark.name, 
       bookmark.description, 
       TreeItemCollapsibleState.None, 
-      undefined,
+      bookmark.iconName || undefined,
       bookmark.path,
       bookmark.type,
       contextValue ? `${contextValue}Bookmark` : "bookmark",

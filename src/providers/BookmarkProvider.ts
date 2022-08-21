@@ -1,3 +1,4 @@
+import { BookmarkViewType } from './../models/BookmarkViewType';
 import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
 import { join } from "path";
@@ -8,14 +9,16 @@ import { BookmarkView } from '../views/BookmarkView';
 
 
 export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
-  private static readonly Collapsible_Key = `bookmarks.collapsibleStates`;
+  private static readonly Collapsible_Personal_Key = `bookmarks.personal.collapsibleStates`;
+  private static readonly Collapsible_Team_Key = `bookmarks.team.collapsibleStates`;
   private ext: ExtensionService;
 
   private _onDidChangeTreeData = new EventEmitter<BookmarkTreeItem | void>()
   public readonly onDidChangeTreeData: Event<void | BookmarkTreeItem> = this._onDidChangeTreeData.event;
 
-  public static async getCollapsibleState(id: string) {
-    const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(BookmarkProvider.Collapsible_Key) || {};
+  public static async getCollapsibleState(id: string, type: BookmarkViewType) {
+    const stateKey = type === BookmarkViewType.team ? BookmarkProvider.Collapsible_Team_Key : BookmarkProvider.Collapsible_Personal_Key
+    const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
     if (elements[id]) {
       return elements[id];
@@ -25,7 +28,7 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   }
 
   constructor(private isTeam: boolean = false) {
-  // constructor(private bookmarks: BookmarkTreeItem[]) {
+    // constructor(private bookmarks: BookmarkTreeItem[]) {
     this.ext = ExtensionService.getInstance();
   }
 
@@ -35,11 +38,12 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   }
 
   public async updateCollapsibleState(element: BookmarkTreeItem, collapsibleState: TreeItemCollapsibleState): Promise<void> {
-    const elements = await this.ext.getState<{ [prop: string]: TreeItemCollapsibleState }>(BookmarkProvider.Collapsible_Key) || {};
+    const stateKey = this.isTeam ? BookmarkProvider.Collapsible_Team_Key : BookmarkProvider.Collapsible_Personal_Key;
+    const elements = await this.ext.getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
-    elements[element.label] = collapsibleState;
+    elements[element.id] = collapsibleState;
 
-    this.ext.setState(BookmarkProvider.Collapsible_Key, elements);
+    this.ext.setState(stateKey, elements);
   }
   
   public getTreeItem(element: BookmarkTreeItem): TreeItem | Thenable<TreeItem> {
@@ -82,12 +86,20 @@ export class BookmarkTreeItem extends TreeItem {
   ) {
     super(label, collapsibleState);
 
+    if (!type) {
+      if (path?.startsWith(`http`)) {
+        type = BookmarkType.Link;
+      } else if (path) {
+        type = BookmarkType.File;
+      }
+    }
+
     if (type === BookmarkType.File && path) {
       const fileResourcePath = toAbsPath(path);
       this.resourceUri = fileResourcePath;
     } else if (type === BookmarkType.Link && path) {
       this.resourceUri = Uri.parse(path);
-      this.iconPath = new ThemeIcon("bookmark");
+      this.iconPath = iconPath ? new ThemeIcon(iconPath as string) : new ThemeIcon("bookmark");
     } else {
       this.resourceUri = undefined;
     }

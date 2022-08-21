@@ -184,6 +184,10 @@
               "groupId": {
                 "type": "string",
                 "description": "ID of the group (optional)"
+              },
+              "iconName": {
+                "type": "string",
+                "description": "Name of the icon to set for the link (optional)"
               }
             },
             "additionalProperties": false,

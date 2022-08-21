@@ -27,7 +27,7 @@ export class InitTeam {
       return;
     }
 
-    writeFileSync(teamFilePath, JSON.stringify({groups:[],bookmarks:[]}, null, 2), "utf8");
+    writeFileSync(teamFilePath, JSON.stringify({name:"Team bookmarks",groups:[],bookmarks:[]}, null, 2), "utf8");
     Notifications.info(`Team file created.`)
   }
 }

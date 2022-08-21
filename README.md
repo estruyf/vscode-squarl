@@ -74,6 +74,7 @@ Initial file content:
 
 ```json
 {
+  "name": "Team bookmarks",
   "groups": [],
   "bookmarks": []
 }
@@ -123,6 +124,7 @@ Bookmark items contain the following properties:
 - **description**: Description for your bookmark (optional)
 - **type**: `file` or `link`
 - **groupId**: ID of the group (optional)
+- **iconName**: Name of the icon to set for the link (optional)
 
 Example:
 

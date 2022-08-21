@@ -5,9 +5,13 @@ export interface Bookmark {
   path: string;
   type: BookmarkType;
 
+  // Optional
   id?: string;
   description?: string;
-  lineColumn?: string;
   groupId?: string;
+  iconName?: string;
+
+  // Programatically
+  lineColumn?: string;
   isDeleted?: boolean;
 }

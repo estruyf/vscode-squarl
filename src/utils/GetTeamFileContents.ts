@@ -13,9 +13,11 @@ export const getTeamFileContents = async () => {
   const teamContents = teamDoc.getText();
 
   let teamData: {
+    name: string;
     groups: Group[];
     bookmarks: Bookmark[];
   };
+  
   if (typeof teamContents === "string") {
     teamData = JSON.parse(teamContents);
   } else {

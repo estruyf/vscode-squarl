@@ -12,6 +12,7 @@
     "typescript.tsc.autoDetect": "off",
     "exportall.config.folderListener": [
         "/src/commands",
-        "/src/constants"
+        "/src/constants",
+        "/src/models"
     ]
 }

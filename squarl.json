@@ -1,0 +1,31 @@
+{
+  "groups": [
+    {
+      "id": "links",
+      "name": "Links"
+    }
+  ],
+  "bookmarks": [
+    {
+      "name": "GitHub Repo",
+      "path": "https://github.com/estruyf/vscode-squarl",
+      "type": "link",
+      "groupId": "links",
+      "iconName": "github"
+    },
+    {
+      "name": "Issues",
+      "path": "https://github.com/estruyf/vscode-squarl/issues",
+      "type": "link",
+      "groupId": "links",
+      "iconName": "bug"
+    },
+    {
+      "name": "Marketplace",
+      "path": "#",
+      "type": "link",
+      "groupId": "links",
+      "iconName": "extensions"
+    }
+  ]
+}
