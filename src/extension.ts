@@ -1,9 +1,7 @@
-import { EditGroup } from './commands/EditGroup';
-import { AssignGroup } from './commands/AssignGroup';
 import { ExtensionContext } from "vscode";
 import { ExtensionService } from "./services/ExtensionService";
 import { BookmarkView } from "./views/BookmarkView";
-import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting } from "./commands";
+import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting, InitTeam, EditGroup, AssignGroup } from "./commands";
 import { SettingsListener, TeamSettingsListener } from './listeners';
 
 
@@ -23,6 +21,7 @@ export async function activate(context: ExtensionContext) {
 	EditGroup.registerCommands();
 	DeleteGroup.registerCommands();
 	Sorting.registerCommands();
+	InitTeam.registerCommands();
 
 	// Register all the listeners
 	SettingsListener.init();

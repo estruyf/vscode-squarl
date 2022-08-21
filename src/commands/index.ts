@@ -7,3 +7,4 @@ export * from './EditBookmarks';
 export * from './EditGroup';
 export * from './SearchBookmarks';
 export * from './Sorting';
+export * from './initTeam';

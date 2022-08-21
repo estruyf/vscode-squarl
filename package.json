@@ -40,6 +40,7 @@
     "onCommand:squarl.bookmark.addLink",
     "onCommand:squarl.bookmark.addFile",
     "onCommand:squarl.bookmark.search",
+    "onCommand:squarl.team.init",
     "onView:squarl.view.personal",
     "onView:squarl.view.team"
   ],
@@ -47,20 +48,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "squarl.bookmark.addLink",
-        "title": "Bookmark link",
-        "category": "Squarl"
-      },
-      {
         "command": "squarl.bookmark.addFile",
         "title": "Bookmark file",
         "category": "Squarl"
       },
       {
-        "command": "squarl.bookmark.edit",
-        "title": "Edit",
-        "category": "Squarl",
-        "icon": "$(edit)"
+        "command": "squarl.bookmark.addLink",
+        "title": "Bookmark link",
+        "category": "Squarl"
       },
       {
         "command": "squarl.bookmark.delete",
@@ -69,16 +64,10 @@
         "icon": "$(trash)"
       },
       {
-        "command": "squarl.sort.up",
-        "title": "Move up",
+        "command": "squarl.bookmark.edit",
+        "title": "Edit",
         "category": "Squarl",
-        "icon": "$(chevron-up)"
-      },
-      {
-        "command": "squarl.sort.down",
-        "title": "Move down",
-        "category": "Squarl",
-        "icon": "$(chevron-down)"
+        "icon": "$(edit)"
       },
       {
         "command": "squarl.bookmark.search",
@@ -87,16 +76,22 @@
         "icon": "$(search)"
       },
       {
+        "command": "squarl.group.assign",
+        "title": "Assign group",
+        "category": "Squarl",
+        "icon": "$(group-by-ref-type)"
+      },
+      {
         "command": "squarl.group.create",
         "title": "Create a bookmark group",
         "category": "Squarl",
         "icon": "$(group-by-ref-type)"
       },
       {
-        "command": "squarl.group.assign",
-        "title": "Assign group",
+        "command": "squarl.group.delete",
+        "title": "Delete group",
         "category": "Squarl",
-        "icon": "$(group-by-ref-type)"
+        "icon": "$(trash)"
       },
       {
         "command": "squarl.group.edit",
@@ -105,10 +100,22 @@
         "icon": "$(pencil)"
       },
       {
-        "command": "squarl.group.delete",
-        "title": "Delete group",
+        "command": "squarl.sort.down",
+        "title": "Move down",
         "category": "Squarl",
-        "icon": "$(trash)"
+        "icon": "$(chevron-down)"
+      },
+      {
+        "command": "squarl.sort.up",
+        "title": "Move up",
+        "category": "Squarl",
+        "icon": "$(chevron-up)"
+      },
+      {
+        "command": "squarl.team.init",
+        "title": "Initialize team file",
+        "category": "Squarl",
+        "icon": "$(organization)"
       }
     ],
     "configuration": {
@@ -118,10 +125,12 @@
           "markdownDescription": "The list of groups you want to use",
           "type": "array",
           "default": [],
-          "examples": [{
-            "id": "",
-            "name": ""
-          }],
+          "examples": [
+            {
+              "id": "",
+              "name": ""
+            }
+          ],
           "items": {
             "type": "object",
             "properties": {
@@ -243,6 +252,10 @@
         {
           "command": "squarl.group.delete",
           "when": "false"
+        },
+        {
+          "command": "squarl.team.init",
+          "when": "squarl:hasTeamFile == false"
         }
       ],
       "view/title": [

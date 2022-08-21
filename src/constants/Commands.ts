@@ -21,4 +21,7 @@ export const COMMAND = {
   // Sorting
   moveUp: `${EXTENSION_NAME}.sort.up`,
   moveDown: `${EXTENSION_NAME}.sort.down`,
+
+  // Team file
+  teamInit: `${EXTENSION_NAME}.team.init`
 }

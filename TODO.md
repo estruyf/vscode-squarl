@@ -10,6 +10,9 @@
 - https://code.visualstudio.com/updates/v1_70#_webview-context-menus
 - Remove the view when team file is removed -> How can a treeview be closed/removed?
 - Better activation options
+- Readme
+- Marketplace background color
+- Create a command to init a team project file `squarl.json`
 
 ## In progess
 
