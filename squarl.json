@@ -1,4 +1,5 @@
 {
+  "name": "Project links",
   "groups": [
     {
       "id": "links",
@@ -26,6 +27,20 @@
       "type": "link",
       "groupId": "links",
       "iconName": "extensions"
+    },
+    {
+      "name": "@eliostruyf",
+      "path": "https://twitter.com/estruyf",
+      "type": "link",
+      "groupId": "links",
+      "iconName": "twitter"
+    },
+    {
+      "name": "Sponsor",
+      "path": "https://github.com/sponsors/estruyf",
+      "type": "link",
+      "groupId": "links",
+      "iconName": "heart"
     }
   ]
 }
