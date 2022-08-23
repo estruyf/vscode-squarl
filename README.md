@@ -150,7 +150,7 @@ Example:
 ```json
 {
   "id": "group",
-  "name": "Group
+  "name": "Group"
 }
 ```
 
