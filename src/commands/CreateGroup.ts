@@ -1,3 +1,4 @@
+import { createGroup } from './../utils/CreateGroup';
 import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { Group } from "../models";
@@ -20,30 +21,14 @@ export class CreateGroup {
     const ext = ExtensionService.getInstance();
     const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
 
-    const name = await window.showInputBox({
-      prompt: 'What is the name of the group?',
-      placeHolder: 'Name of the group',
-      ignoreFocusOut: true,
-      validateInput: (value: string) => {
-        if (!value) {
-          return "Please define a name for the group";
-        } else if (groups.find(g => g.id === createGroupId(value))) {
-          return "A group with this name already exists";
-        } else {
-          return "";
-        }
-      }
-    });
-
-    if (!name) {
+    const newGroup = await createGroup();
+    if (!newGroup) {
       return;
     }
 
-    groups.push({
-      id: createGroupId(name),
-      name
-    });
-
+    groups.push(newGroup);
     ext.setSetting(SETTING.groups, groups);
+
+    return newGroup;
   }
 }

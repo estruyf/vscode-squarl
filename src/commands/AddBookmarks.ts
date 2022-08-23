@@ -100,8 +100,13 @@ export class AddBookmarks {
 
     const bookmarks = BookmarkView.currentItems;
     if (bookmarks.find(b => b.path === path)) {
-      Notifications.warning(`File already added`);
-      return;
+      const answer = await window.showQuickPick(["Yes", "No"], {
+        placeHolder: "It seems the file was already added, do you wish to continue?"
+      });
+  
+      if (!answer && answer === "No") {
+        return;
+      }
     }
 
     const description = await window.showInputBox({

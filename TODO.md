@@ -11,9 +11,6 @@
 - Remove the view when team file is removed -> How can a treeview be closed/removed?
 - Marketplace background color
 - Update marketplace URL in the `squarl.json` file
-- If duplicate, ask to add
-- `workbench.action.gotoLine`
-- Selected line to highlight line
 
 ## In progess
 
@@ -73,6 +70,10 @@
 - Team file search
 
 - Better extension activation
+- Selected line to highlight line
+
+- If duplicate, ask to add
+- Create group on bookmark creation
 
 ## Removed
 
