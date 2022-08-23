@@ -7,11 +7,11 @@ interface GroupQuickPickItem extends QuickPickItem {
   id: string;
 }
 
-export const selectGroupQuestion = async (crntGroupId?: string) => {
+export const selectGroupQuestion = async (crntGroupId?: string): Promise<string | undefined> => {
   const ext = ExtensionService.getInstance();
   const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
   
-  let groupId = undefined;
+  let groupId: string | undefined = "";
   if (groups && groups.length > 0) {
     const allGroups: GroupQuickPickItem[] = [
       { 
@@ -31,6 +31,10 @@ export const selectGroupQuestion = async (crntGroupId?: string) => {
       canPickMany: false,
       ignoreFocusOut: true,
     });
+
+    if (group === undefined) {
+      return undefined;
+    }
 
     if (group && group.id) {
       groupId = groups.find(g => g.id === group.id)?.id

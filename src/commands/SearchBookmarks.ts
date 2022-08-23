@@ -58,7 +58,7 @@ export class SearchBookmarks {
 
     const bookmarkItem = BookmarkView.createBookmark(selectedBookmark);
     if (bookmarkItem.command) {
-      commands.executeCommand(bookmarkItem.command.command, ...bookmarkItem.command.arguments || [])
+      await commands.executeCommand(bookmarkItem.command.command, ...bookmarkItem.command.arguments || []);
     }
   }
 }

@@ -48,9 +48,12 @@
   "contributes": {
     "commands": [
       {
+        "command": "squarl.bookmark.open",
+        "title": "Squarl: Open a bookmark"
+      },
+      {
         "command": "squarl.bookmark.addFile",
-        "title": "Bookmark file",
-        "category": "Squarl"
+        "title": "Squarl: Bookmark file"
       },
       {
         "command": "squarl.bookmark.addLink",
@@ -165,9 +168,9 @@
                 "type": "string",
                 "description": "File path or link to the bookmark"
               },
-              "lineColumn": {
+              "highlightedLine": {
                 "type": "number",
-                "description": "Line and column of the bookmark (optional)"
+                "description": "Line of the file bookmark (optional)"
               },
               "description": {
                 "type": "string",
@@ -230,6 +233,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "squarl.bookmark.open",
+          "when": "false"
+        },
+        {
           "command": "squarl.bookmark.edit",
           "when": "false"
         },
@@ -272,6 +279,12 @@
           "command": "squarl.bookmark.search",
           "when": "view == squarl.view.personal",
           "group": "navigation@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "squarl.bookmark.addFile",
+          "group": "squarl"
         }
       ],
       "explorer/context": [

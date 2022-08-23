@@ -2,9 +2,10 @@ import { BookmarkViewType } from './../models/BookmarkViewType';
 import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
 import { join } from "path";
-import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, Position, Range, TextDocumentShowOptions, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
 import { BookmarkView } from '../views/BookmarkView';
+import { COMMAND } from '../constants';
 
 
 
@@ -80,6 +81,7 @@ export class BookmarkTreeItem extends TreeItem {
     public collapsibleState: TreeItemCollapsibleState,
     public iconPath: string | ThemeIcon | Uri | { light: string | Uri; dark: string | Uri; } | undefined,
     public path?: string,
+    public highlightedLine?: number,
     public type?: BookmarkType,
     public contextValue?: string,
     public children?: BookmarkTreeItem[]
@@ -105,10 +107,20 @@ export class BookmarkTreeItem extends TreeItem {
     }
 
     if (this.resourceUri) {
+      const commandArguments: any = [this.resourceUri];
+
+      if (highlightedLine) {
+        const viewOptions = {
+          selection: new Range(new Position(highlightedLine, 0), new Position(highlightedLine, 0))
+        } as TextDocumentShowOptions;
+        
+        commandArguments.push(viewOptions);
+      }
+
       this.command = {
-        command: 'vscode.open',
+        command: COMMAND.openBookmark,
         title: 'Open',
-        arguments: [this.resourceUri]
+        arguments: commandArguments
       };
     }
 

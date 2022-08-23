@@ -10,8 +10,8 @@ export interface Bookmark {
   description?: string;
   groupId?: string;
   iconName?: string;
+  highlightedLine?: number;
 
   // Programatically
-  lineColumn?: string;
   isDeleted?: boolean;
 }

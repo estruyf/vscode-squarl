@@ -1,4 +1,4 @@
-import { QuickPickItem, Uri } from 'vscode';
+import { Uri } from 'vscode';
 import { Notifications } from './../services/Notifications';
 import { BookmarkView } from './../views/BookmarkView';
 import { Bookmark } from './../models/Bookmark';
@@ -6,7 +6,7 @@ import { SETTING } from './../constants/Settings';
 import { COMMAND } from './../constants/Commands';
 import { commands, window } from 'vscode';
 import { ExtensionService } from './../services/ExtensionService';
-import { BookmarkType, Group } from '../models';
+import { BookmarkType } from '../models';
 import { parse, relative } from 'path';
 import { selectGroupQuestion } from '../questions';
 import { saveBookmarks } from '../utils/SaveBookmarks';
@@ -26,6 +26,10 @@ export class AddBookmarks {
     );
   }
 
+  /**
+   * Add hyperlink as a bookmark
+   * @returns 
+   */
   public static async addLink() {    
     const link = await window.showInputBox({
       prompt: 'Enter the link to add',
@@ -59,12 +63,16 @@ export class AddBookmarks {
     AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId);    
   }
 
+  /**
+   * Add file as a bookmark
+   * @param file 
+   * @returns 
+   */
   public static async addFile(file?: Uri) {
     let path: string;
+    const editor = window.activeTextEditor;
 
     if (!file) {
-      const editor = window.activeTextEditor;
-
       if (!editor) {
         Notifications.warning(`Didn't find an active file to add`);
         return;
@@ -103,12 +111,32 @@ export class AddBookmarks {
       value: fileName
     });
 
+    if (description === undefined) {
+      return;
+    }
+
     const groupId = await selectGroupQuestion();
 
-    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId);    
+    if (groupId === undefined) {
+      return;
+    }
+
+    let highlightedLine = undefined;
+    const activeSelection = editor?.selection;
+    if (activeSelection && activeSelection.start.line) {
+      const answer = await window.showQuickPick(["Yes", "No"], {
+        placeHolder: "Do you want to add the highlighted line reference?"
+      });
+  
+      if (answer && answer === "Yes") {
+        highlightedLine = activeSelection.start.line
+      }
+    }
+
+    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId, highlightedLine);    
   }
 
-  private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string) {
+  private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string, highlightedLine?: number) {
     const ext = ExtensionService.getInstance();
 
     const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
@@ -122,6 +150,10 @@ export class AddBookmarks {
 
     if (groupId) {
       newBookmark.groupId = groupId;
+    }
+
+    if (highlightedLine) {
+      newBookmark.highlightedLine = highlightedLine;
     }
 
     bookmarks.push(newBookmark);

@@ -1,3 +1,4 @@
+import { OpenBookmark } from './commands/OpenBookmark';
 import { ExtensionContext } from "vscode";
 import { ExtensionService } from "./services/ExtensionService";
 import { BookmarkView } from "./views/BookmarkView";
@@ -12,6 +13,7 @@ export async function activate(context: ExtensionContext) {
 	BookmarkView.init();
 
 	// Register all the commands
+	OpenBookmark.registerCommands();
 	AddBookmarks.registerCommands();
 	EditBookmarks.registerCommands();
 	DeleteBookmarks.registerCommands();

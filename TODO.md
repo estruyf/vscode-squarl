@@ -10,6 +10,10 @@
 - https://code.visualstudio.com/updates/v1_70#_webview-context-menus
 - Remove the view when team file is removed -> How can a treeview be closed/removed?
 - Marketplace background color
+- Update marketplace URL in the `squarl.json` file
+- If duplicate, ask to add
+- `workbench.action.gotoLine`
+- Selected line to highlight line
 
 ## In progess
 

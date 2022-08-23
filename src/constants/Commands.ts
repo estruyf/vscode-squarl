@@ -4,6 +4,8 @@ export const EXTENSION_NAME = 'squarl';
 
 export const COMMAND = {
   // Bookmarks
+  openBookmark: `${EXTENSION_NAME}.bookmark.open`,
+  
   addLink: `${EXTENSION_NAME}.bookmark.addLink`,
   addFile: `${EXTENSION_NAME}.bookmark.addFile`,
 

@@ -222,6 +222,7 @@ export class BookmarkView {
         icon,
         undefined,
         undefined,
+        undefined,
         contextValue || "group", 
         []
       );
@@ -251,6 +252,7 @@ export class BookmarkView {
       TreeItemCollapsibleState.None, 
       bookmark.iconName || undefined,
       bookmark.path,
+      bookmark.highlightedLine,
       bookmark.type,
       contextValue ? `${contextValue}Bookmark` : "bookmark",
     );
