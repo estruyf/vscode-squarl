@@ -23,7 +23,7 @@
     },
     {
       "name": "Marketplace",
-      "path": "#",
+      "path": "https://marketplace.visualstudio.com/items?itemName=eliostruyf.vscode-squarl",
       "type": "link",
       "groupId": "links",
       "iconName": "extensions"
