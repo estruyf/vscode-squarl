@@ -1,6 +1,6 @@
 {
   "name": "vscode-squarl",
-  "displayName": "Squarl",
+  "displayName": "Squarl Bookmarks",
   "description": "Bookmark manager for VS Code",
   "publisher": "eliostruyf",
   "icon": "assets/logo/squarl-128x128.png",
