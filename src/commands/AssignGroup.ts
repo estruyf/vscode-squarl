@@ -36,7 +36,7 @@ export class AssignGroup {
       return;
     }
 
-    const bookmarks = BookmarkView.currentItems;
+    const bookmarks = BookmarkView.currentProjectItems;
     const bookmark = bookmarks.find(b => b.id === item.id);
 
     if (bookmark) {

@@ -98,7 +98,7 @@ export class Sorting {
    * @returns 
    */
   private static async bookmarkUp(e: BookmarkTreeItem) {
-    const bookmarks = BookmarkView.currentItems;
+    const bookmarks = BookmarkView.currentProjectItems;
     
     // Move the item up in the array
     const crntItem = bookmarks.find(b => b.id === e.id);
@@ -134,7 +134,7 @@ export class Sorting {
    * @returns 
    */
   private static async bookmarkDown(e: BookmarkTreeItem) {
-    const bookmarks = BookmarkView.currentItems;
+    const bookmarks = BookmarkView.currentProjectItems;
 
     // Move the item down in the array
     const crntItem = bookmarks.find(b => b.id === e.id);

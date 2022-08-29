@@ -28,7 +28,7 @@ export class DeleteBookmarks {
       return;
     }
 
-    const newBookmarks = BookmarkView.currentItems.filter(b => b.id !== e.id);
+    const newBookmarks = BookmarkView.currentProjectItems.filter(b => b.id !== e.id);
     await saveBookmarks(newBookmarks);
   }
 }

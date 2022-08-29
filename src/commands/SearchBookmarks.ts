@@ -20,10 +20,17 @@ export class SearchBookmarks {
   }
 
   private static async search(e: BookmarkTreeItem) {
-    const personalBookmarks = BookmarkView.currentItems;
+    const globalBookmarks = BookmarkView.currentGlobalItems;
+    const personalBookmarks = BookmarkView.currentProjectItems;
     const teamBookmarks = await BookmarkView.currentTeamItems();
 
     const allSearchItems = [
+      ...globalBookmarks.map(b => ({
+        label: `$(globe) ${b.name}`,
+        description: b.description,
+        detail: b.path,
+        id: b.id
+      } as SearchItem)),
       ...personalBookmarks.map(b => ({
         label: `$(person) ${b.name}`,
         description: b.description,

@@ -54,12 +54,14 @@
       },
       {
         "command": "squarl.bookmark.addFile",
-        "title": "Squarl: Bookmark file"
+        "title": "Squarl: Bookmark file",
+        "icon": "$(file-add)"
       },
       {
         "command": "squarl.bookmark.addLink",
         "title": "Bookmark link",
-        "category": "Squarl"
+        "category": "Squarl",
+        "icon": "$(add)"
       },
       {
         "command": "squarl.bookmark.delete",
@@ -275,18 +277,6 @@
           "when": "squarl:hasTeamFile == false"
         }
       ],
-      "view/title": [
-        {
-          "command": "squarl.group.create",
-          "when": "view == squarl.view.project",
-          "group": "navigation@1"
-        },
-        {
-          "command": "squarl.bookmark.search",
-          "when": "view == squarl.view.project",
-          "group": "navigation@2"
-        }
-      ],
       "editor/context": [
         {
           "command": "squarl.bookmark.addFile",
@@ -298,6 +288,28 @@
           "command": "squarl.bookmark.addFile",
           "group": "squarl",
           "when": "explorerResourceIsFolder == false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "squarl.bookmark.addLink",
+          "when": "view == squarl.view.project",
+          "group": "navigation@1"
+        },
+        {
+          "command": "squarl.bookmark.addFile",
+          "when": "view == squarl.view.project",
+          "group": "navigation@2"
+        },
+        {
+          "command": "squarl.group.create",
+          "when": "view == squarl.view.project",
+          "group": "navigation@3"
+        },
+        {
+          "command": "squarl.bookmark.search",
+          "when": "view == squarl.view.project",
+          "group": "navigation@4"
         }
       ],
       "view/item/context": [

@@ -65,7 +65,7 @@ export class EditGroup {
     ext.setSetting(SETTING.groups, filteredGroups);
 
     // Update all the bookmarks
-    const bookmarks = BookmarkView.currentItems.map(b => {
+    const bookmarks = BookmarkView.currentProjectItems.map(b => {
       if (b.groupId === crntGroup.id) {
         b.groupId = newGroupId;
       }

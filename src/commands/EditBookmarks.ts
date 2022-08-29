@@ -21,7 +21,7 @@ export class EditBookmarks {
 
   private static async edit(e: BookmarkTreeItem) {
     const ext = ExtensionService.getInstance();
-    const items = BookmarkView.currentItems;
+    const items = BookmarkView.currentProjectItems;
     const bookmark = items.find(b => b.id === e.id);
 
     if (!bookmark) {

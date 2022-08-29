@@ -18,7 +18,6 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   public readonly onDidChangeTreeData: Event<void | BookmarkTreeItem> = this._onDidChangeTreeData.event;
 
   constructor(private viewId: BookmarkViewType) {
-    // constructor(private bookmarks: BookmarkTreeItem[]) {
     this.ext = ExtensionService.getInstance();
   }
 

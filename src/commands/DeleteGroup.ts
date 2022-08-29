@@ -44,7 +44,7 @@ export class DeleteGroup {
     ext.setSetting(SETTING.groups, newGroups);
 
     // Update all the bookmarks
-    const bookmarks = BookmarkView.currentItems.map(b => {
+    const bookmarks = BookmarkView.currentProjectItems.map(b => {
       if (b.groupId === crntGroup.id) {
         delete b.groupId;
       }

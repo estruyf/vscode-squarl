@@ -98,7 +98,7 @@ export class AddBookmarks {
       path = relative(wsPath.fsPath, path);
     }
 
-    const bookmarks = BookmarkView.currentItems;
+    const bookmarks = BookmarkView.currentProjectItems;
     if (bookmarks.find(b => b.path === path)) {
       const answer = await window.showQuickPick(["Yes", "No"], {
         placeHolder: "It seems the file was already added, do you wish to continue?"
@@ -144,7 +144,7 @@ export class AddBookmarks {
   private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string, highlightedLine?: number) {
     const ext = ExtensionService.getInstance();
 
-    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
+    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "project") || [];
 
     const newBookmark: Bookmark = {
       name,
