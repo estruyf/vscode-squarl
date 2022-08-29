@@ -184,6 +184,25 @@ export class BookmarkView {
       }
     }
 
+    // Ungrouped items
+    const groupItems = crntBookmarks.filter(b => b.groupId && !b.isDeleted);
+    if (groups.length > 0) {
+      const ungrouped = [];
+
+      for (const item of groupItems) {
+        if (!groups.find(g => g.id === item.groupId)) {
+          ungrouped.push(item);
+        }
+      }
+
+      if (ungrouped.length > 0) {
+        const groupItem = await this.groupBookmarks(DefaultGroup.unknown, ungrouped, viewType || BookmarkViewType.project, new ThemeIcon("question"));
+        if (groupItem) {
+          crntTreeItems.push(groupItem);
+        }
+      }
+    }
+
     // Deleted files
     const deletedFiles = crntBookmarks.filter(b => b.isDeleted);
     if (deletedFiles.length > 0) {

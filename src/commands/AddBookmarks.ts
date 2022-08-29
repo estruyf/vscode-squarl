@@ -30,7 +30,7 @@ export class AddBookmarks {
    * Add hyperlink as a bookmark
    * @returns 
    */
-  public static async addLink() {    
+  public static async addLink() {
     const link = await window.showInputBox({
       prompt: 'Enter the link to add',
       placeHolder: 'https://example.com',
