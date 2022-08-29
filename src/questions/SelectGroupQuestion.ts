@@ -17,7 +17,7 @@ export const selectGroupQuestion = async (crntGroupId?: string): Promise<string 
   let groupId: string | undefined = "";
   const allGroups: GroupQuickPickItem[] = [
     { 
-      label: "", 
+      label: "<No group>", 
       id: "" 
     },
     ...groups.map(g => (
@@ -37,11 +37,18 @@ export const selectGroupQuestion = async (crntGroupId?: string): Promise<string 
       id: GROUP_CREATION_ID
     }
   ];
-  
+
+  // Put the selected item first
+  const selectedItem = allGroups.find(g => g.picked);
+  if (selectedItem) {
+    allGroups.splice(allGroups.indexOf(selectedItem), 1);
+    allGroups.unshift(selectedItem);
+  }
+
   const group = await window.showQuickPick(allGroups, {
     placeHolder: `To which group do you want to add the bookmark?`,
     canPickMany: false,
-    ignoreFocusOut: true,
+    ignoreFocusOut: true
   });
 
   if (group === undefined) {

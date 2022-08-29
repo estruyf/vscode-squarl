@@ -20,7 +20,6 @@ export class EditBookmarks {
   }
 
   private static async edit(e: BookmarkTreeItem) {
-    const ext = ExtensionService.getInstance();
     const items = BookmarkView.currentProjectItems;
     const bookmark = items.find(b => b.id === e.id);
 
@@ -73,6 +72,11 @@ export class EditBookmarks {
     }
 
     const groupId = await selectGroupQuestion(bookmark.groupId);
+
+    if (groupId === undefined) {
+      return;
+    }
+    
     if (groupId) {
       bookmark.groupId = groupId;
     } else {
