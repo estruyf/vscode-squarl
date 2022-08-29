@@ -15,46 +15,44 @@ export const selectGroupQuestion = async (crntGroupId?: string): Promise<string 
   const GROUP_CREATION_ID = "CREATE_GROUP";
   
   let groupId: string | undefined = "";
-  if (groups && groups.length > 0) {
-    const allGroups: GroupQuickPickItem[] = [
-      { 
-        label: "", 
-        id: "" 
-      }, 
-      ...groups.map(g => (
-        {
-          label: g.name,
-          id: g.id,
-          picked: g.id === crntGroupId
-        } as GroupQuickPickItem
-      )),
+  const allGroups: GroupQuickPickItem[] = [
+    { 
+      label: "", 
+      id: "" 
+    },
+    ...groups.map(g => (
       {
-        label: "Creation",
-        kind: QuickPickItemKind.Separator,
-        id: ""
-      },
-      {
-        label: "$(plus) Create new group",
-        id: GROUP_CREATION_ID
-      }
-    ];
-
-    const group = await window.showQuickPick(allGroups, {
-      placeHolder: `To which group do you want to add the bookmark?`,
-      canPickMany: false,
-      ignoreFocusOut: true,
-    });
-
-    if (group === undefined) {
-      return undefined;
+        label: g.name,
+        id: g.id,
+        picked: g.id === crntGroupId
+      } as GroupQuickPickItem
+    )),
+    {
+      label: "Creation",
+      kind: QuickPickItemKind.Separator,
+      id: ""
+    },
+    {
+      label: "$(plus) Create new group",
+      id: GROUP_CREATION_ID
     }
+  ];
+  
+  const group = await window.showQuickPick(allGroups, {
+    placeHolder: `To which group do you want to add the bookmark?`,
+    canPickMany: false,
+    ignoreFocusOut: true,
+  });
 
-    if (group && group.id === GROUP_CREATION_ID) {
-      const newGroup = await CreateGroup.create();
-      groupId = newGroup?.id;
-    } else if (group && group.id) {
-      groupId = groups.find(g => g.id === group.id)?.id
-    }
+  if (group === undefined) {
+    return undefined;
+  }
+
+  if (group && group.id === GROUP_CREATION_ID) {
+    const newGroup = await CreateGroup.create();
+    groupId = newGroup?.id;
+  } else if (group && group.id) {
+    groupId = groups.find(g => g.id === group.id)?.id
   }
 
   return groupId;
