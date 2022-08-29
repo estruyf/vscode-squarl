@@ -114,8 +114,16 @@ export class ExtensionService {
    * @param settingKey 
    * @returns 
    */
-  public getSetting<T>(settingKey: string): T | undefined {
+  public getSetting<T>(settingKey: string, scope?: "global" | "project"): T | undefined {
     const config = workspace.getConfiguration(CONFIG_KEY);
+    const inspectValue = config.inspect(settingKey);
+
+    if (inspectValue && scope === "global") {
+      return inspectValue.globalValue as any;
+    } else if (inspectValue && scope === "project") {
+      return inspectValue.workspaceValue as any;
+    }
+
     return config.get<T>(settingKey);
   }
 
@@ -124,8 +132,13 @@ export class ExtensionService {
    * @param settingKey 
    * @param value 
    */
-  public async setSetting(settingKey: string, value: any): Promise<void> {
+  public async setSetting(settingKey: string, value: any, scope?: "global" | "project"): Promise<void> {
     const config = workspace.getConfiguration(CONFIG_KEY);
-    await config.update(settingKey, value);
+
+    if (scope === "global") {
+      await config.update(settingKey, value, true);
+    } else {
+      await config.update(settingKey, value, false);
+    }
   }
 }

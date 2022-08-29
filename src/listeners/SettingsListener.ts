@@ -10,7 +10,7 @@ export class SettingsListener {
   public static init() {
     workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration(CONFIG_KEY)) {
-        BookmarkView.update(BookmarkViewType.personal);
+        BookmarkView.update(BookmarkViewType.project);
 
         // Set the VS Code context key
         setHasGroupContext();

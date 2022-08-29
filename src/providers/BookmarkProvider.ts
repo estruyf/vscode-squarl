@@ -1,24 +1,29 @@
 import { BookmarkViewType } from './../models/BookmarkViewType';
 import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
-import { join } from "path";
 import { Event, EventEmitter, Position, Range, TextDocumentShowOptions, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
 import { BookmarkView } from '../views/BookmarkView';
-import { COMMAND } from '../constants';
+import { COMMAND, VIEW } from '../constants';
 
 
 
 export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
-  private static readonly Collapsible_Personal_Key = `bookmarks.personal.collapsibleStates`;
+  private static readonly Collapsible_Global_Key = `bookmarks.global.collapsibleStates`;
+  private static readonly Collapsible_Project_Key = `bookmarks.project.collapsibleStates`;
   private static readonly Collapsible_Team_Key = `bookmarks.team.collapsibleStates`;
   private ext: ExtensionService;
 
   private _onDidChangeTreeData = new EventEmitter<BookmarkTreeItem | void>()
   public readonly onDidChangeTreeData: Event<void | BookmarkTreeItem> = this._onDidChangeTreeData.event;
 
+  constructor(private viewId: BookmarkViewType) {
+    // constructor(private bookmarks: BookmarkTreeItem[]) {
+    this.ext = ExtensionService.getInstance();
+  }
+
   public static async getCollapsibleState(id: string, type: BookmarkViewType) {
-    const stateKey = type === BookmarkViewType.team ? BookmarkProvider.Collapsible_Team_Key : BookmarkProvider.Collapsible_Personal_Key
+    const stateKey = this.getCollapsibleStateKey(type);
     const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
     if (elements[id]) {
@@ -28,18 +33,13 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     return TreeItemCollapsibleState.Expanded;
   }
 
-  constructor(private isTeam: boolean = false) {
-    // constructor(private bookmarks: BookmarkTreeItem[]) {
-    this.ext = ExtensionService.getInstance();
-  }
-
   public refresh(): void {
     // Triggers the getChildren method to refresh the view
     this._onDidChangeTreeData.fire();
   }
 
   public async updateCollapsibleState(element: BookmarkTreeItem, collapsibleState: TreeItemCollapsibleState): Promise<void> {
-    const stateKey = this.isTeam ? BookmarkProvider.Collapsible_Team_Key : BookmarkProvider.Collapsible_Personal_Key;
+    const stateKey = BookmarkProvider.getCollapsibleStateKey(this.viewId);
     const elements = await this.ext.getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
     elements[element.id] = collapsibleState;
@@ -53,13 +53,13 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   
   public async getChildren(element?: BookmarkTreeItem | undefined): Promise<BookmarkTreeItem[]> {
     if (!element) {
-      if (this.isTeam) {
+      if (this.viewId === BookmarkViewType.team) {
         const teamBookmarks = await BookmarkView.getTeamBookmarks();
         if (teamBookmarks) {
           return teamBookmarks;
         }
       } else {
-        return await BookmarkView.getBookmarks();
+        return await BookmarkView.getBookmarks(this.viewId);
       }
     } else {
       if (element.children) {
@@ -69,6 +69,20 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     }
 
     return [];
+  }
+
+  /**
+   * Retrieve the state key for the collapsible groups
+   * @returns 
+   */
+  private static getCollapsibleStateKey(type: BookmarkViewType = BookmarkViewType.project): string {
+    if (type === BookmarkViewType.team) {
+      return BookmarkProvider.Collapsible_Team_Key;
+    } else if (type === BookmarkViewType.global) {
+      return BookmarkProvider.Collapsible_Global_Key;
+    } else {
+      return BookmarkProvider.Collapsible_Project_Key;
+    }
   }
 }
 

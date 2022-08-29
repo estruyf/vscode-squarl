@@ -1,6 +1,7 @@
 
 
 export enum BookmarkViewType {
-  personal = 1,
+  project = 1,
+  global,
   team
 }

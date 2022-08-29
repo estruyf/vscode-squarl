@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 import { v4 } from 'uuid';
 import { ThemeIcon, commands } from 'vscode';
 import { TreeItemCollapsibleState, TreeView, window } from 'vscode';
-import { SETTING } from '../constants';
+import { SETTING, VIEW } from '../constants';
 import { Bookmark, BookmarkType, Group } from '../models';
 import { BookmarkProvider, BookmarkTreeItem } from '../providers/BookmarkProvider';
 import { toAbsPath } from '../utils/ToAbsPath';
@@ -15,8 +15,10 @@ import { getTeamFileContents } from '../utils/GetTeamFileContents';
 
 
 export class BookmarkView {
-  private static provider: BookmarkProvider;
+  private static globalProvider: BookmarkProvider;
+  private static projectProvider: BookmarkProvider;
   private static teamProvider: BookmarkProvider | undefined;
+
   private static tree: TreeView<BookmarkTreeItem>;
   private static teamTree: TreeView<BookmarkTreeItem> | undefined;
   public static _currentItems: Bookmark[];
@@ -45,35 +47,70 @@ export class BookmarkView {
     }
   }
 
+  /**
+   * Initialize all the views
+   */
   public static async init() {
-    await BookmarkView.bindBookmarks();
+    BookmarkView.bindGlobalbookmarks();
+    BookmarkView.bindProjectBookmarks();
+    BookmarkView.bindTeamBookmarks();
   }
 
-  public static async bindBookmarks() {
-    BookmarkView.provider = new BookmarkProvider();
+  /**
+   * Global settings bookmarks
+   */
+  public static async bindGlobalbookmarks() {
+    const ext = ExtensionService.getInstance();
+    const globalLinks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "global") || [];
 
-    BookmarkView.tree = window.createTreeView('squarl.view.personal', {
-      treeDataProvider: BookmarkView.provider,
+    if (globalLinks && globalLinks.length > 0) {
+      BookmarkView.globalProvider = new BookmarkProvider(BookmarkViewType.global);
+      await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, true);
+
+      BookmarkView.tree = window.createTreeView(VIEW.global, {
+        treeDataProvider: BookmarkView.globalProvider,
+        showCollapseAll: true
+      });
+
+      BookmarkView.tree.onDidExpandElement(e => {
+        BookmarkView.globalProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Expanded);
+      });
+      BookmarkView.tree.onDidCollapseElement(e => {
+        BookmarkView.globalProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
+      });
+    } else {
+      await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, false);
+    }
+  }
+
+  /**
+   * Project bookmarks
+   */
+  public static async bindProjectBookmarks() {
+    BookmarkView.projectProvider = new BookmarkProvider(BookmarkViewType.project);
+
+    BookmarkView.tree = window.createTreeView(VIEW.project, {
+      treeDataProvider: BookmarkView.projectProvider,
       showCollapseAll: true
     });
 
     BookmarkView.tree.onDidExpandElement(e => {
-      BookmarkView.provider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Expanded);
+      BookmarkView.projectProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Expanded);
     });
     BookmarkView.tree.onDidCollapseElement(e => {
-      BookmarkView.provider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
+      BookmarkView.projectProvider.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
     });
-
-    BookmarkView.bindTeamView()
   }
 
-  public static async bindTeamView() {
+  /**
+   * Team bookmarks
+   */
+  public static async bindTeamBookmarks() {
     if (await hasTeamFile()) {
-      BookmarkView.teamProvider = new BookmarkProvider(true);
-      BookmarkView.tree.title = "Personal Bookmarks";
+      BookmarkView.teamProvider = new BookmarkProvider(BookmarkViewType.team);
       await commands.executeCommand('setContext', CONTEXT_KEY.hasTeamFile, true);
 
-      BookmarkView.teamTree = window.createTreeView('squarl.view.team', {
+      BookmarkView.teamTree = window.createTreeView(VIEW.team, {
         treeDataProvider: BookmarkView.teamProvider,
         showCollapseAll: true
       });
@@ -85,25 +122,24 @@ export class BookmarkView {
         BookmarkView.teamProvider?.updateCollapsibleState(e.element, TreeItemCollapsibleState.Collapsed);
       });
     } else {
-      BookmarkView.tree.title = "Bookmarks";
       await commands.executeCommand('setContext', CONTEXT_KEY.hasTeamFile, false);
     }
   }
 
   public static async update(type: BookmarkViewType) {
-    if (type === BookmarkViewType.personal) {
-      BookmarkView.provider.refresh();
+    if (type === BookmarkViewType.project) {
+      BookmarkView.projectProvider.refresh();
     } else {
       if (BookmarkView.teamProvider) {
         BookmarkView.teamProvider.refresh();
       } else {
-        BookmarkView.bindTeamView();
+        BookmarkView.bindTeamBookmarks();
       }
     }
   }
 
   public static async close(type: BookmarkViewType) {
-    if (type === BookmarkViewType.personal) {
+    if (type === BookmarkViewType.project) {
       BookmarkView.tree.dispose();
     } else {
       BookmarkView.teamTree?.dispose();
@@ -116,10 +152,10 @@ export class BookmarkView {
    * Retrieve all the bookmarks for the current workspace
    * @returns 
    */
-  public static async getBookmarks() {
+  public static async getBookmarks(viewType?: BookmarkViewType) {
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
-    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, viewType && viewType === BookmarkViewType.global ? "global": "project") || [];
+    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, viewType && viewType === BookmarkViewType.global ? "global": "project") || [];
 
     BookmarkView._currentItems = BookmarkView.processBookmarks(bookmarks);
     
@@ -132,7 +168,7 @@ export class BookmarkView {
       const groupItems = this._currentItems.filter(b => b.groupId === group.id && !b.isDeleted);
 
       if (groupItems.length > 0) {
-        const groupItem = await this.groupBookmarks(group, groupItems, BookmarkViewType.personal);
+        const groupItem = await this.groupBookmarks(group, groupItems, BookmarkViewType.project);
         if (groupItem) {
           this.currentTreeItems.push(groupItem);
         }
@@ -142,7 +178,7 @@ export class BookmarkView {
     // Deleted files
     const deletedFiles = this._currentItems.filter(b => b.isDeleted);
     if (deletedFiles.length > 0) {
-      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, BookmarkViewType.personal, new ThemeIcon("trash"), "deleted");
+      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, BookmarkViewType.project, new ThemeIcon("trash"), "deleted");
       if (groupItem) {
         this.currentTreeItems.push(groupItem);
       }
@@ -208,7 +244,7 @@ export class BookmarkView {
   ): Promise<BookmarkTreeItem> {
     const groupId =`group.${group.id}`;
     let groupItem = 
-      type === BookmarkViewType.personal ? 
+      type === BookmarkViewType.project ? 
         this.currentTreeItems.find(c => c.id === groupId) :
         this.currentTeamTreeItems.find(c => c.id === groupId);
 

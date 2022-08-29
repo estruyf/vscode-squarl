@@ -14,5 +14,21 @@
         "/src/commands",
         "/src/constants",
         "/src/models"
+    ],
+    "squarl.bookmarks": [
+        {
+            "name": "BookmarkView.ts",
+            "path": "src/views/BookmarkView.ts",
+            "description": "Project bookmarks start",
+            "type": "file",
+            "highlightedLine": 119
+        },
+        {
+            "name": "BookmarkView.ts",
+            "path": "src/views/BookmarkView.ts",
+            "description": "Team bookmarks start",
+            "type": "file",
+            "highlightedLine": 158
+        }
     ]
 }

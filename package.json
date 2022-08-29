@@ -42,7 +42,7 @@
     "onCommand:squarl.bookmark.addFile",
     "onCommand:squarl.bookmark.search",
     "onCommand:squarl.team.init",
-    "onView:squarl.view.personal",
+    "onView:squarl.view.project",
     "onView:squarl.view.team"
   ],
   "main": "./dist/extension.js",
@@ -215,8 +215,13 @@
     "views": {
       "squarl-view": [
         {
-          "id": "squarl.view.personal",
-          "name": "Bookmarks"
+          "id": "squarl.view.global",
+          "name": "Global Bookmarks",
+          "when": "squarl:hasGlobalBookmarks"
+        },
+        {
+          "id": "squarl.view.project",
+          "name": "Project Bookmarks"
         },
         {
           "id": "squarl.view.team",
@@ -227,7 +232,7 @@
     },
     "viewsWelcome": [
       {
-        "view": "squarl.view.personal",
+        "view": "squarl.view.project",
         "contents": "Get started by adding some bookmarks to your project.\n[Add link](command:squarl.bookmark.addLink)\n[Add file](command:squarl.bookmark.addFile)"
       }
     ],
@@ -273,12 +278,12 @@
       "view/title": [
         {
           "command": "squarl.group.create",
-          "when": "view == squarl.view.personal",
+          "when": "view == squarl.view.project",
           "group": "navigation@1"
         },
         {
           "command": "squarl.bookmark.search",
-          "when": "view == squarl.view.personal",
+          "when": "view == squarl.view.project",
           "group": "navigation@2"
         }
       ],
@@ -298,47 +303,47 @@
       "view/item/context": [
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.personal && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
           "group": "1_move@1"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.personal && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
           "group": "1_move@2"
         },
         {
           "command": "squarl.group.assign",
-          "when": "view == squarl.view.personal && viewItem == bookmark && squarl:hasgroups",
+          "when": "view == squarl.view.project && viewItem == bookmark && squarl:hasgroups",
           "group": "2_groupy@1"
         },
         {
           "command": "squarl.bookmark.edit",
-          "when": "view == squarl.view.personal && viewItem == bookmark",
+          "when": "view == squarl.view.project && viewItem == bookmark",
           "group": "3_modify@3"
         },
         {
           "command": "squarl.bookmark.delete",
-          "when": "view == squarl.view.personal && viewItem =~ /bookmark|deletedBookmark/",
+          "when": "view == squarl.view.project && viewItem =~ /bookmark|deletedBookmark/",
           "group": "3_modify@4"
         },
         {
           "command": "squarl.group.edit",
-          "when": "view == squarl.view.personal && viewItem == group",
+          "when": "view == squarl.view.project && viewItem == group",
           "group": "3_modify@3"
         },
         {
           "command": "squarl.group.delete",
-          "when": "view == squarl.view.personal && viewItem == group",
+          "when": "view == squarl.view.project && viewItem == group",
           "group": "3_modify@4"
         },
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.personal && viewItem =~ /^bookmark|group?$/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group?$/",
           "group": "inline@2"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.personal && viewItem =~ /^bookmark|group?$/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group?$/",
           "group": "inline@1"
         }
       ]
