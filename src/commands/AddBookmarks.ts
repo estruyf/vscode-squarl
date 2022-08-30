@@ -10,6 +10,7 @@ import { BookmarkType } from '../models';
 import { parse, relative } from 'path';
 import { selectGroupQuestion } from '../questions';
 import { saveBookmarks } from '../utils/SaveBookmarks';
+import { ViewService } from '../services';
 
 
 export class AddBookmarks {
@@ -98,7 +99,7 @@ export class AddBookmarks {
       path = relative(wsPath.fsPath, path);
     }
 
-    const bookmarks = BookmarkView.currentProjectItems;
+    const bookmarks = await ViewService.projectView.currentItems() || [];
     if (bookmarks.find(b => b.path === path)) {
       const answer = await window.showQuickPick(["Yes", "No"], {
         placeHolder: "It seems the file was already added, do you wish to continue?"

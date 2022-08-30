@@ -1,3 +1,4 @@
+import { ViewService } from './../services/ViewService';
 import { BookmarkView } from './../views/BookmarkView';
 import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
@@ -65,7 +66,8 @@ export class EditGroup {
     ext.setSetting(SETTING.groups, filteredGroups);
 
     // Update all the bookmarks
-    const bookmarks = BookmarkView.currentProjectItems.map(b => {
+    const crntItems = await ViewService.projectView.currentItems() || [];
+    const bookmarks = crntItems.map(b => {
       if (b.groupId === crntGroup.id) {
         b.groupId = newGroupId;
       }

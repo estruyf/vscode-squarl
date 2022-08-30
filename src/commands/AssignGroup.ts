@@ -7,6 +7,7 @@ import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
 import { selectGroupQuestion } from '../questions';
 import { saveBookmarks } from '../utils/SaveBookmarks';
+import { ViewService } from '../services';
 
 
 export class AssignGroup {
@@ -36,7 +37,8 @@ export class AssignGroup {
       return;
     }
 
-    const bookmarks = BookmarkView.currentProjectItems;
+
+    const bookmarks = await ViewService.projectView.currentItems() || [];
     const bookmark = bookmarks.find(b => b.id === item.id);
 
     if (bookmark) {

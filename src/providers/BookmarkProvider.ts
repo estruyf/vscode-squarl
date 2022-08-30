@@ -1,10 +1,10 @@
+import { ViewService } from './../services/ViewService';
 import { BookmarkViewType } from './../models/BookmarkViewType';
 import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
 import { Event, EventEmitter, Position, Range, TextDocumentShowOptions, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
-import { BookmarkView } from '../views/BookmarkView';
-import { COMMAND, VIEW } from '../constants';
+import { COMMAND } from '../constants';
 
 
 
@@ -53,12 +53,14 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   public async getChildren(element?: BookmarkTreeItem | undefined): Promise<BookmarkTreeItem[]> {
     if (!element) {
       if (this.viewId === BookmarkViewType.team) {
-        const teamBookmarks = await BookmarkView.getTeamBookmarks();
+        const teamBookmarks = await ViewService.teamView.getBookmarks();
         if (teamBookmarks) {
           return teamBookmarks;
         }
+      } else if (this.viewId === BookmarkViewType.global) {
+        return await ViewService.globalView.getBookmarks() || [];
       } else {
-        return await BookmarkView.getBookmarks(this.viewId);
+        return await ViewService.projectView.getBookmarks() || [];
       }
     } else {
       if (element.children) {

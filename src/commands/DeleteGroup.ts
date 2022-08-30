@@ -2,6 +2,7 @@ import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { Group } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
+import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
 import { saveBookmarks } from "../utils/SaveBookmarks";
 import { splitGroupId } from "../utils/SplitGroupId";
@@ -44,7 +45,8 @@ export class DeleteGroup {
     ext.setSetting(SETTING.groups, newGroups);
 
     // Update all the bookmarks
-    const bookmarks = BookmarkView.currentProjectItems.map(b => {
+    const crntItems = await ViewService.projectView.currentItems() || [];
+    const bookmarks = crntItems.map(b => {
       if (b.groupId === crntGroup.id) {
         delete b.groupId;
       }

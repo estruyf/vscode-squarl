@@ -1,7 +1,9 @@
+import { ViewService } from './../services/ViewService';
 import { commands, QuickPickItem, window } from "vscode";
 import { COMMAND } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
+import { createBookmark } from "../utils";
 import { BookmarkView } from "../views/BookmarkView";
 
 interface SearchItem extends QuickPickItem {
@@ -20,9 +22,9 @@ export class SearchBookmarks {
   }
 
   private static async search(e: BookmarkTreeItem) {
-    const globalBookmarks = BookmarkView.currentGlobalItems;
-    const personalBookmarks = BookmarkView.currentProjectItems;
-    const teamBookmarks = await BookmarkView.currentTeamItems();
+    const globalBookmarks = await ViewService.globalView.currentItems() || [];
+    const personalBookmarks = await ViewService.projectView.currentItems() || [];
+    const teamBookmarks = await ViewService.teamView.currentItems() || [];
 
     const allSearchItems = [
       ...globalBookmarks.map(b => ({
@@ -63,7 +65,7 @@ export class SearchBookmarks {
       return;
     }
 
-    const bookmarkItem = BookmarkView.createBookmark(selectedBookmark);
+    const bookmarkItem = createBookmark(selectedBookmark);
     if (bookmarkItem.command) {
       await commands.executeCommand(bookmarkItem.command.command, ...bookmarkItem.command.arguments || []);
     }

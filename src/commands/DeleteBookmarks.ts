@@ -1,6 +1,7 @@
 import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
+import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
 import { saveBookmarks } from "../utils/SaveBookmarks";
 import { BookmarkView } from "../views/BookmarkView";
@@ -28,7 +29,8 @@ export class DeleteBookmarks {
       return;
     }
 
-    const newBookmarks = BookmarkView.currentProjectItems.filter(b => b.id !== e.id);
+    const crntItems = await ViewService.projectView.currentItems() || [];
+    const newBookmarks = crntItems.filter(b => b.id !== e.id);
     await saveBookmarks(newBookmarks);
   }
 }

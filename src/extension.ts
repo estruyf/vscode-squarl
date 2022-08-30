@@ -1,16 +1,16 @@
 import { OpenBookmark } from './commands/OpenBookmark';
 import { ExtensionContext } from "vscode";
 import { ExtensionService } from "./services/ExtensionService";
-import { BookmarkView } from "./views/BookmarkView";
 import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting, InitTeam, EditGroup, AssignGroup } from "./commands";
 import { SettingsListener, TeamSettingsListener } from './listeners';
+import { ViewService } from './services';
 
 
 export async function activate(context: ExtensionContext) {
-	const ext = ExtensionService.getInstance(context);
+	ExtensionService.getInstance(context);
 
 	// Register all the views
-	BookmarkView.init();
+	ViewService.init();
 
 	// Register all the commands
 	OpenBookmark.registerCommands();

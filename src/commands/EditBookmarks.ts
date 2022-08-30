@@ -3,6 +3,7 @@ import { COMMAND, SETTING } from "../constants";
 import { BookmarkType } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { selectGroupQuestion } from "../questions";
+import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
 import { saveBookmarks } from "../utils/SaveBookmarks";
 import { BookmarkView } from "../views/BookmarkView";
@@ -20,7 +21,7 @@ export class EditBookmarks {
   }
 
   private static async edit(e: BookmarkTreeItem) {
-    const items = BookmarkView.currentProjectItems;
+    const items = await ViewService.projectView.currentItems() || [];
     const bookmark = items.find(b => b.id === e.id);
 
     if (!bookmark) {
