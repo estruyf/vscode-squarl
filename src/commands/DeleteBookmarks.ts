@@ -19,8 +19,6 @@ export class DeleteBookmarks {
   }
 
   private static async delete(e: BookmarkTreeItem) {
-    const ext = ExtensionService.getInstance();
-
     const answer = await window.showQuickPick(["Yes", "No"], {
       placeHolder: "Are you sure you want to delete this bookmark?"
     });
@@ -31,6 +29,6 @@ export class DeleteBookmarks {
 
     const crntItems = await ViewService.projectView.currentItems() || [];
     const newBookmarks = crntItems.filter(b => b.id !== e.id);
-    await saveBookmarks(newBookmarks);
+    await saveBookmarks(newBookmarks, !!e.isGlobal);
   }
 }

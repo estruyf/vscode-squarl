@@ -84,6 +84,6 @@ export class EditBookmarks {
       delete bookmark.groupId;
     }
 
-    await saveBookmarks(items);
+    await saveBookmarks(items, !!e.isGlobal);
   }
 }

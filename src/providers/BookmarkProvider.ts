@@ -94,6 +94,7 @@ export class BookmarkTreeItem extends TreeItem {
     public label: string,
     public description: string | undefined,
     public collapsibleState: TreeItemCollapsibleState,
+    public isGlobal: boolean | undefined,
     public iconPath: string | ThemeIcon | Uri | { light: string | Uri; dark: string | Uri; } | undefined,
     public path?: string,
     public highlightedLine?: number,

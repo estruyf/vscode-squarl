@@ -14,6 +14,7 @@ export const createBookmark = (bookmark: Bookmark, contextValue: string | undefi
     bookmark.name, 
     bookmark.description, 
     TreeItemCollapsibleState.None, 
+    bookmark.isGlobal,
     bookmark.iconName || undefined,
     bookmark.path,
     bookmark.highlightedLine,

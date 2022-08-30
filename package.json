@@ -217,13 +217,8 @@
     "views": {
       "squarl-view": [
         {
-          "id": "squarl.view.global",
-          "name": "Global Bookmarks",
-          "when": "squarl:hasGlobalBookmarks"
-        },
-        {
           "id": "squarl.view.project",
-          "name": "Project Bookmarks"
+          "name": "Bookmarks"
         },
         {
           "id": "squarl.view.team",

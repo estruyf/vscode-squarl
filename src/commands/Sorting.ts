@@ -5,7 +5,7 @@ import { commands } from "vscode";
 import { COMMAND, SETTING } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
-import { Group } from '../models';
+import { Bookmark, Group } from '../models';
 import { ViewService } from '../services';
 
 
@@ -46,7 +46,7 @@ export class Sorting {
    */
   private static async groupUp(e: BookmarkTreeItem) {
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!e.isGlobal ? 'global' : 'project') || [];
 
     const groupId = splitGroupId(e.id);
 
@@ -62,7 +62,8 @@ export class Sorting {
 
     await ExtensionService.getInstance().setSetting(
       SETTING.groups,
-      groups
+      groups,
+      !!e.isGlobal ? 'global' : 'project'
     );
   }
 
@@ -73,7 +74,7 @@ export class Sorting {
    */
   private static async groupDown(e: BookmarkTreeItem) {
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!e.isGlobal ? 'global' : 'project') || [];
 
     const groupId = splitGroupId(e.id);
 
@@ -89,7 +90,8 @@ export class Sorting {
 
     await ExtensionService.getInstance().setSetting(
       SETTING.groups,
-      groups
+      groups,
+      !!e.isGlobal ? 'global' : 'project'
     );
   }
 
@@ -99,8 +101,11 @@ export class Sorting {
    * @returns 
    */
   private static async bookmarkUp(e: BookmarkTreeItem) {
-    const bookmarks = await ViewService.projectView.currentItems() || [];
-    
+    const allBookmarks = await ViewService.projectView.currentItems() || [];
+
+    let bookmarks: Bookmark[] = Object.assign([], allBookmarks);
+    bookmarks = bookmarks.filter(b => b.isGlobal === e.isGlobal);
+
     // Move the item up in the array
     const crntItem = bookmarks.find(b => b.id === e.id);
     const index = bookmarks.findIndex(b => b.id === e.id);
@@ -126,7 +131,7 @@ export class Sorting {
       newBookmarks.unshift(clonedItem);
     }
 
-    await saveBookmarks(newBookmarks);
+    await saveBookmarks(newBookmarks, !!e.isGlobal);
   }
 
   /**
@@ -135,7 +140,10 @@ export class Sorting {
    * @returns 
    */
   private static async bookmarkDown(e: BookmarkTreeItem) {
-    const bookmarks = await ViewService.projectView.currentItems() || [];
+    const allBookmarks = await ViewService.projectView.currentItems() || [];
+
+    let bookmarks: Bookmark[] = Object.assign([], allBookmarks);
+    bookmarks = bookmarks.filter(b => b.isGlobal === e.isGlobal);
 
     // Move the item down in the array
     const crntItem = bookmarks.find(b => b.id === e.id);
@@ -163,6 +171,6 @@ export class Sorting {
       }
     }
 
-    await saveBookmarks(newBookmarks);
+    await saveBookmarks(newBookmarks, !!e.isGlobal);
   }
 }

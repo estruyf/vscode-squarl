@@ -14,4 +14,5 @@ export interface Bookmark {
 
   // Programatically
   isDeleted?: boolean;
+  isGlobal?: boolean;
 }

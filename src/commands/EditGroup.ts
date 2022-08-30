@@ -74,6 +74,6 @@ export class EditGroup {
       return b;
     });
     
-    await saveBookmarks(bookmarks);
+    await saveBookmarks(bookmarks, !!item.isGlobal);
   }
 }

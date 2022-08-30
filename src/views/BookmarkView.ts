@@ -37,7 +37,7 @@ export class BookmarkView {
     const ext = ExtensionService.getInstance();
     const scope = this.viewType === BookmarkViewType.global ? "global" : "project";
     const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, scope) || [];
-    this._currentItems = this.processBookmarks(bookmarks);
+    this._currentItems = this.validateBookmarks(bookmarks);
     return this._currentItems;
   }
 
@@ -57,9 +57,7 @@ export class BookmarkView {
     await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, true);
 
     let viewId;
-    if (this.viewType === BookmarkViewType.global) {
-      viewId = VIEW.global;
-    } else if (this.viewType === BookmarkViewType.project) {
+    if (this.viewType === BookmarkViewType.project) {
       viewId = VIEW.project;
     } else if (this.viewType === BookmarkViewType.team) {
       viewId = VIEW.team;
@@ -112,58 +110,62 @@ export class BookmarkView {
       groups = teamFileData.groups || [];
       bookmarks = teamFileData.bookmarks || [];
     } else {
-      groups = ext.getSetting<Group[]>(SETTING.groups, this.viewType && this.viewType === BookmarkViewType.global ? "global": "project") || [];
-      bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, this.viewType && this.viewType === BookmarkViewType.global ? "global": "project") || [];
+      const projectGroups = ext.getSetting<Group[]>(SETTING.groups, "project") || [];
+      const projectBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "project") || [];
+
+      const globalBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "global") || [];
+
+      groups = [...projectGroups];
+      bookmarks = [...projectBookmarks.map(b => ({...b, isGlobal: false})), ...globalBookmarks.map(b => ({...b, isGlobal: true}))];
     }
 
-    const crntBookmarks = this.processBookmarks(bookmarks);
-    let crntTreeItems = [
-      ...crntBookmarks.filter(b => !b.groupId && !b.isDeleted).map(b => createBookmark(b))
-    ];
+    // Remove duplicates
+    groups = groups.filter((group, index, array) => { 
+      return array.findIndex(g => g.id === group.id) === index;
+    })
 
-    // Add all items assigned to a group
-    for (const group of groups) {
-      const groupItems = crntBookmarks.filter(b => b.groupId === group.id && !b.isDeleted);
+    if (bookmarks.filter(b => b.isGlobal).length > 0) {
+      const globalGroups = ext.getSetting<Group[]>(SETTING.groups, "global") || [];
 
-      if (groupItems.length > 0) {
-        const groupItem = await this.groupBookmarks(group, groupItems, this.viewType || BookmarkViewType.project);
-        if (groupItem) {
-          crntTreeItems.push(groupItem);
-        }
-      }
+      const globalItems = await this.processBookmarks(bookmarks.filter(b => b.isGlobal), globalGroups, true);
+      const projectItems = await this.processBookmarks(bookmarks.filter(b => !b.isGlobal), groups, false);
+
+      const globalGroup = new BookmarkTreeItem(
+        "global",
+        "Global bookmarks", 
+        undefined, 
+        await BookmarkProvider.getCollapsibleState("global", BookmarkViewType.project), 
+        true,
+        new ThemeIcon("globe"),
+        undefined,
+        undefined,
+        undefined,
+        "globalGroup", 
+        [...globalItems.treeItems]
+      );
+
+      const projectGroup = new BookmarkTreeItem(
+        "project",
+        "Project bookmarks", 
+        undefined, 
+        await BookmarkProvider.getCollapsibleState("project", BookmarkViewType.project), 
+        false,
+        new ThemeIcon("code"),
+        undefined,
+        undefined,
+        undefined,
+        "projectGroup", 
+        [...projectItems.treeItems]
+      );
+
+      this._currentItems = [...projectItems.bookmarks, ...globalItems.bookmarks];
+      return [globalGroup, projectGroup];
+    } else {
+      const items = await this.processBookmarks(bookmarks, groups);
+
+      this._currentItems = items.bookmarks;
+      return [...items.treeItems];
     }
-
-    // Ungrouped items
-    const groupItems = crntBookmarks.filter(b => b.groupId && !b.isDeleted);
-    if (groups.length > 0) {
-      const ungrouped = [];
-
-      for (const item of groupItems) {
-        if (!groups.find(g => g.id === item.groupId)) {
-          ungrouped.push(item);
-        }
-      }
-
-      if (ungrouped.length > 0) {
-        const groupItem = await this.groupBookmarks(DefaultGroup.unknown, ungrouped, this.viewType || BookmarkViewType.project, new ThemeIcon("question"));
-        if (groupItem) {
-          crntTreeItems.push(groupItem);
-        }
-      }
-    }
-
-    // Deleted files
-    const deletedFiles = crntBookmarks.filter(b => b.isDeleted);
-    if (deletedFiles.length > 0) {
-      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, this.viewType || BookmarkViewType.project, new ThemeIcon("trash"), "deleted");
-      if (groupItem) {
-        crntTreeItems.push(groupItem);
-      }
-    }
-
-    this._currentItems = crntBookmarks;
-
-    return [...crntTreeItems];
   }
 
   /**
@@ -173,10 +175,11 @@ export class BookmarkView {
     group: Group, 
     items: Bookmark[],
     type: BookmarkViewType,
+    isGlobal?: boolean,
     icon?: ThemeIcon, 
     contextValue?: string
   ): Promise<BookmarkTreeItem> {
-    const groupId =`group.${group.id}`;
+    const groupId =`group.${isGlobal ? `global.` : ``}${group.id}`;
     let groupItem = undefined;
 
     if (!groupItem) {
@@ -186,6 +189,7 @@ export class BookmarkView {
         groupName, 
         undefined, 
         await BookmarkProvider.getCollapsibleState(groupId, type), 
+        isGlobal,
         icon,
         undefined,
         undefined,
@@ -207,10 +211,68 @@ export class BookmarkView {
   }
 
   /**
-   * Process all the bookmarks with an id and check if not deleted
+   * Processes bookmarks to generate tree items
+   * @param bookmarks 
+   * @returns 
+   */
+  private async processBookmarks(bookmarks: Bookmark[], groups: Group[], isGlobal?: boolean) {
+    const crntBookmarks = this.validateBookmarks(bookmarks);
+
+    let crntTreeItems = [
+      ...crntBookmarks.filter(b => !b.groupId && !b.isDeleted).map(b => createBookmark(b))
+    ];
+
+    // Add all items assigned to a group
+    for (const group of groups) {
+      const groupItems = crntBookmarks.filter(b => b.groupId === group.id && !b.isDeleted);
+
+      if (groupItems.length > 0) {
+        const groupItem = await this.groupBookmarks(group, groupItems, this.viewType || BookmarkViewType.project, isGlobal);
+        if (groupItem) {
+          crntTreeItems.push(groupItem);
+        }
+      }
+    }
+
+    // Ungrouped items
+    const groupItems = crntBookmarks.filter(b => b.groupId && !b.isDeleted);
+    if (groups.length > 0) {
+      const ungrouped = [];
+
+      for (const item of groupItems) {
+        if (!groups.find(g => g.id === item.groupId)) {
+          ungrouped.push(item);
+        }
+      }
+
+      if (ungrouped.length > 0) {
+        const groupItem = await this.groupBookmarks(DefaultGroup.unknown, ungrouped, this.viewType || BookmarkViewType.project, isGlobal, new ThemeIcon("question"));
+        if (groupItem) {
+          crntTreeItems.push(groupItem);
+        }
+      }
+    }
+
+    // Deleted files
+    const deletedFiles = crntBookmarks.filter(b => b.isDeleted);
+    if (deletedFiles.length > 0) {
+      const groupItem = await this.groupBookmarks(DefaultGroup.deleted, deletedFiles, this.viewType || BookmarkViewType.project, isGlobal, new ThemeIcon("trash"), "deleted");
+      if (groupItem) {
+        crntTreeItems.push(groupItem);
+      }
+    }
+
+    return {
+      bookmarks: crntBookmarks,
+      treeItems: crntTreeItems
+    };
+  }
+
+  /**
+   * Validate all the bookmarks with an id and check if not deleted
    * @param bookmarks 
    */
-  private processBookmarks(bookmarks: Bookmark[]) {
+  private validateBookmarks(bookmarks: Bookmark[]) {
     return bookmarks.map(b => {
       if (b.type === BookmarkType.File && !existsSync(toAbsPath(b.path).fsPath)) {
         b.isDeleted = true;

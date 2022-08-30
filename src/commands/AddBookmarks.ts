@@ -164,7 +164,7 @@ export class AddBookmarks {
 
     bookmarks.push(newBookmark);
 
-    await saveBookmarks(bookmarks);
+    await saveBookmarks(bookmarks, false);
   }
   
 }

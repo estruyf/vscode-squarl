@@ -34,7 +34,7 @@ export class SearchBookmarks {
         id: b.id
       } as SearchItem)),
       ...personalBookmarks.map(b => ({
-        label: `$(person) ${b.name}`,
+        label: `$(code) ${b.name}`,
         description: b.description,
         detail: b.path,
         id: b.id

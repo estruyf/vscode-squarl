@@ -53,6 +53,6 @@ export class DeleteGroup {
       return b;
     });
     
-    await saveBookmarks(bookmarks);
+    await saveBookmarks(bookmarks, !!item.isGlobal);
   }
 }

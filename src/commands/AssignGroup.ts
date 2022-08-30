@@ -49,7 +49,7 @@ export class AssignGroup {
         delete bookmark.groupId;
       }
 
-      await saveBookmarks(bookmarks);
+      await saveBookmarks(bookmarks, !!item.isGlobal);
     }
   }
 }
