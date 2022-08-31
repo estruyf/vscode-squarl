@@ -1,14 +1,12 @@
 ## TODO
 
 - Support multiple workspaces
-- Windows filepath support
 - Local, remote and team bookmarks
   - this.ctx.globalState.setKeysForSync(["keyname"])
 - Export bookmarks to a file
 - Import bookmarks from a file
 - Sorting by name or manual sorting
 - https://code.visualstudio.com/updates/v1_70#_webview-context-menus
-- Remove the view when team file is removed -> How can a treeview be closed/removed?
 - Marketplace background color
 
 ## In progess
@@ -75,6 +73,8 @@
 - Create group on bookmark creation
 
 - Update marketplace URL in the `squarl.json` file
+
+- Windows filepath support
 
 ## Removed
 
