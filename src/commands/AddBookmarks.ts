@@ -1,8 +1,7 @@
+import { getBookmarks } from './../utils/GetBookmarks';
 import { Uri } from 'vscode';
 import { Notifications } from './../services/Notifications';
-import { BookmarkView } from './../views/BookmarkView';
 import { Bookmark } from './../models/Bookmark';
-import { SETTING } from './../constants/Settings';
 import { COMMAND } from './../constants/Commands';
 import { commands, window } from 'vscode';
 import { ExtensionService } from './../services/ExtensionService';
@@ -11,6 +10,7 @@ import { parse, relative } from 'path';
 import { selectGroupQuestion } from '../questions';
 import { saveBookmarks } from '../utils/SaveBookmarks';
 import { ViewService } from '../services';
+import { BookmarkTreeItem } from '../providers/BookmarkProvider';
 
 
 export class AddBookmarks {
@@ -31,7 +31,7 @@ export class AddBookmarks {
    * Add hyperlink as a bookmark
    * @returns 
    */
-  public static async addLink() {
+  public static async addLink(crntBookmark: BookmarkTreeItem) {
     const link = await window.showInputBox({
       prompt: 'Enter the link to add',
       placeHolder: 'https://example.com',
@@ -59,9 +59,9 @@ export class AddBookmarks {
       ignoreFocusOut: true,
     });
 
-    const groupId = await selectGroupQuestion();
+    const groupId = await selectGroupQuestion(undefined, !!crntBookmark.isGlobal);
 
-    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId);    
+    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId, !!crntBookmark.isGlobal);    
   }
 
   /**
@@ -69,11 +69,11 @@ export class AddBookmarks {
    * @param file 
    * @returns 
    */
-  public static async addFile(file?: Uri) {
+  public static async addFile(file?: Uri | BookmarkTreeItem) {
     let path: string;
     const editor = window.activeTextEditor;
 
-    if (!file) {
+    if (!file || !(file as Uri).fsPath) {
       if (!editor) {
         Notifications.warning(`Didn't find an active file to add`);
         return;
@@ -81,7 +81,7 @@ export class AddBookmarks {
 
       path = editor.document.uri.fsPath;
     } else {
-      path = file.fsPath;
+      path = (file as Uri).fsPath;
     }
 
     if (!path) {
@@ -121,7 +121,7 @@ export class AddBookmarks {
       return;
     }
 
-    const groupId = await selectGroupQuestion();
+    const groupId = await selectGroupQuestion(undefined, !!(file as BookmarkTreeItem).isGlobal);
 
     if (groupId === undefined) {
       return;
@@ -139,13 +139,11 @@ export class AddBookmarks {
       }
     }
 
-    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId, highlightedLine);    
+    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId, !!(file as BookmarkTreeItem).isGlobal, highlightedLine);    
   }
 
-  private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string, highlightedLine?: number) {
-    const ext = ExtensionService.getInstance();
-
-    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "project") || [];
+  private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string, isGlobal?: boolean, highlightedLine?: number) {
+    const bookmarks = await getBookmarks(!!isGlobal);
 
     const newBookmark: Bookmark = {
       name,
@@ -164,7 +162,7 @@ export class AddBookmarks {
 
     bookmarks.push(newBookmark);
 
-    await saveBookmarks(bookmarks, false);
+    await saveBookmarks(bookmarks, !!isGlobal);
   }
   
 }

@@ -5,9 +5,9 @@ import { ExtensionService } from "../services/ExtensionService";
 import { createGroupId } from "./CreateGroupId";
 
 
-export const createGroup = async () => {
+export const createGroup = async (isGlobal: boolean = false) => {
   const ext = ExtensionService.getInstance();
-  const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+  const groups = ext.getSetting<Group[]>(SETTING.groups, isGlobal ? "global" : "project") || [];
 
   const name = await window.showInputBox({
     prompt: 'What is the name of the group?',

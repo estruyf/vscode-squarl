@@ -1,3 +1,4 @@
+import { BookmarkTreeItem } from './../providers/BookmarkProvider';
 import { createGroup } from './../utils/CreateGroup';
 import { commands, window } from "vscode";
 import { COMMAND, SETTING } from "../constants";
@@ -17,17 +18,17 @@ export class CreateGroup {
     );
   }
 
-  public static async create() {
+  public static async create(crntBookmark?: BookmarkTreeItem) {
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!crntBookmark?.isGlobal ? "global" : "project") || [];
 
-    const newGroup = await createGroup();
+    const newGroup = await createGroup(!!crntBookmark?.isGlobal);
     if (!newGroup) {
       return;
     }
 
     groups.push(newGroup);
-    ext.setSetting(SETTING.groups, groups);
+    ext.setSetting(SETTING.groups, groups, !!crntBookmark?.isGlobal ? "global" : "project");
 
     return newGroup;
   }

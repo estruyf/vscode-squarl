@@ -1,4 +1,3 @@
-import { createGroup } from './../utils/CreateGroup';
 import { QuickPickItem, QuickPickItemKind, window } from "vscode";
 import { SETTING } from "../constants";
 import { Group } from "../models";
@@ -56,7 +55,7 @@ export const selectGroupQuestion = async (crntGroupId?: string, isGlobal: boolea
   }
 
   if (group && group.id === GROUP_CREATION_ID) {
-    const newGroup = await CreateGroup.create();
+    const newGroup = await CreateGroup.create({ isGlobal } as any);
     groupId = newGroup?.id;
   } else if (group && group.id) {
     groupId = groups.find(g => g.id === group.id)?.id

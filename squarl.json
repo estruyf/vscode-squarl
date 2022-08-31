@@ -1,45 +1,35 @@
 {
   "name": "Project links",
-  "groups": [
-    {
-      "id": "links",
-      "name": "Links"
-    }
-  ],
+  "groups": [],
   "bookmarks": [
     {
       "name": "GitHub Repo",
       "path": "https://github.com/estruyf/vscode-squarl",
       "type": "link",
-      "groupId": "links",
       "iconName": "github"
     },
     {
       "name": "Issues",
       "path": "https://github.com/estruyf/vscode-squarl/issues",
       "type": "link",
-      "groupId": "links",
       "iconName": "bug"
     },
     {
       "name": "Marketplace",
       "path": "https://marketplace.visualstudio.com/items?itemName=eliostruyf.vscode-squarl",
       "type": "link",
-      "groupId": "links",
       "iconName": "extensions"
     },
     {
       "name": "@eliostruyf",
       "path": "https://twitter.com/estruyf",
       "type": "link",
-      "groupId": "links",
       "iconName": "twitter"
     },
     {
       "name": "Sponsor",
       "path": "https://github.com/sponsors/estruyf",
       "type": "link",
-      "groupId": "links",
       "iconName": "heart"
     }
   ]

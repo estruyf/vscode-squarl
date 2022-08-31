@@ -35,9 +35,9 @@ export class BookmarkView {
     }
 
     const ext = ExtensionService.getInstance();
-    const scope = this.viewType === BookmarkViewType.global ? "global" : "project";
-    const bookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, scope) || [];
-    this._currentItems = this.validateBookmarks(bookmarks);
+    const projectBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "project") || [];
+    const globalBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "global") || [];
+    this._currentItems = [...this.validateBookmarks(projectBookmarks), ...this.validateBookmarks(globalBookmarks)];
     return this._currentItems;
   }
 
@@ -45,16 +45,11 @@ export class BookmarkView {
    * Bind bookmarks
    */
   public async bindbookmarks() {
-    if (this.viewType === BookmarkViewType.global) {
-      const ext = ExtensionService.getInstance();
-      const globalLinks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "global") || [];
-      await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, (globalLinks && globalLinks.length > 0));
-    } else if (this.viewType === BookmarkViewType.team) {
+    if (this.viewType === BookmarkViewType.team) {
       await commands.executeCommand('setContext', CONTEXT_KEY.hasTeamFile, await hasTeamFile());
     }
     
     this.provider = new BookmarkProvider(this.viewType);
-    await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, true);
 
     let viewId;
     if (this.viewType === BookmarkViewType.project) {
@@ -122,7 +117,12 @@ export class BookmarkView {
     // Remove duplicates
     groups = groups.filter((group, index, array) => { 
       return array.findIndex(g => g.id === group.id) === index;
-    })
+    });
+
+    if (this.viewType === BookmarkViewType.project) {
+      // Set the global context key
+      await commands.executeCommand('setContext', CONTEXT_KEY.hasGlobalBookmarks, bookmarks.filter(b => b.isGlobal).length > 0);
+    }
 
     if (bookmarks.filter(b => b.isGlobal).length > 0) {
       const globalGroups = ext.getSetting<Group[]>(SETTING.groups, "global") || [];

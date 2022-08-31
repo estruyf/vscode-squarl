@@ -9,7 +9,6 @@ import { COMMAND } from '../constants';
 
 
 export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
-  private static readonly Collapsible_Global_Key = `bookmarks.global.collapsibleStates`;
   private static readonly Collapsible_Project_Key = `bookmarks.project.collapsibleStates`;
   private static readonly Collapsible_Team_Key = `bookmarks.team.collapsibleStates`;
   private ext: ExtensionService;
@@ -77,11 +76,9 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
   private static getCollapsibleStateKey(type: BookmarkViewType = BookmarkViewType.project): string {
     if (type === BookmarkViewType.team) {
       return BookmarkProvider.Collapsible_Team_Key;
-    } else if (type === BookmarkViewType.global) {
-      return BookmarkProvider.Collapsible_Global_Key;
-    } else {
-      return BookmarkProvider.Collapsible_Project_Key;
     }
+
+    return BookmarkProvider.Collapsible_Project_Key;
   }
 }
 
