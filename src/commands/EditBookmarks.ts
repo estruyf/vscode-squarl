@@ -1,12 +1,11 @@
 import { commands, window } from "vscode";
-import { COMMAND, SETTING } from "../constants";
-import { BookmarkType } from "../models";
+import { COMMAND } from "../constants";
+import { Bookmark, BookmarkType } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { selectGroupQuestion } from "../questions";
-import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
+import { getBookmarks } from "../utils";
 import { saveBookmarks } from "../utils/SaveBookmarks";
-import { BookmarkView } from "../views/BookmarkView";
 
 
 export class EditBookmarks {
@@ -20,15 +19,15 @@ export class EditBookmarks {
     );
   }
 
-  private static async edit(e: BookmarkTreeItem) {
-    const items = await ViewService.projectView.currentItems() || [];
-    const bookmark = items.find(b => b.id === e.id);
+  private static async edit(crntBookmark: BookmarkTreeItem) {
+    const bookmarks: Bookmark[] = await getBookmarks(!!crntBookmark.isGlobal);
+    const bookmark = bookmarks.find(b => b.id === crntBookmark.id);
 
     if (!bookmark) {
       return;
     }
 
-    if (e.type === BookmarkType.Link) {
+    if (crntBookmark.type === BookmarkType.Link) {
       const link = await window.showInputBox({
         prompt: 'Update the link',
         placeHolder: 'https://example.com',
@@ -72,7 +71,7 @@ export class EditBookmarks {
       bookmark.description = description;
     }
 
-    const groupId = await selectGroupQuestion(bookmark.groupId);
+    const groupId = await selectGroupQuestion(bookmark.groupId, !!crntBookmark.isGlobal);
 
     if (groupId === undefined) {
       return;
@@ -84,6 +83,6 @@ export class EditBookmarks {
       delete bookmark.groupId;
     }
 
-    await saveBookmarks(items, !!e.isGlobal);
+    await saveBookmarks(bookmarks, !!crntBookmark.isGlobal);
   }
 }

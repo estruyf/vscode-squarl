@@ -1,6 +1,7 @@
 export * from './CreateBookmark';
 export * from './CreateGroup';
 export * from './CreateGroupId';
+export * from './GetBookmarks';
 export * from './GetTeamFile';
 export * from './GetTeamFileContents';
 export * from './HasTeamFile';

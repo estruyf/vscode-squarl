@@ -9,9 +9,9 @@ interface GroupQuickPickItem extends QuickPickItem {
   id: string;
 }
 
-export const selectGroupQuestion = async (crntGroupId?: string): Promise<string | undefined> => {
+export const selectGroupQuestion = async (crntGroupId?: string, isGlobal: boolean = false): Promise<string | undefined> => {
   const ext = ExtensionService.getInstance();
-  const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+  const groups = ext.getSetting<Group[]>(SETTING.groups, isGlobal ? "global" : "project") || [];
   const GROUP_CREATION_ID = "CREATE_GROUP";
   
   let groupId: string | undefined = "";

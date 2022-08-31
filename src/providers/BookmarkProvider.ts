@@ -57,8 +57,6 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
         if (teamBookmarks) {
           return teamBookmarks;
         }
-      } else if (this.viewId === BookmarkViewType.global) {
-        return await ViewService.globalView.getBookmarks() || [];
       } else {
         return await ViewService.projectView.getBookmarks() || [];
       }

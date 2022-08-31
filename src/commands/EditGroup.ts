@@ -8,6 +8,7 @@ import { ExtensionService } from "../services/ExtensionService";
 import { createGroupId } from "../utils/CreateGroupId";
 import { splitGroupId } from "../utils/SplitGroupId";
 import { saveBookmarks } from '../utils/SaveBookmarks';
+import { getBookmarks } from '../utils';
 
 
 export class EditGroup {
@@ -27,7 +28,7 @@ export class EditGroup {
     }
 
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!item.isGlobal ? "global" : "project") || [];
 
     const crntGroup = groups.find(g => g.id === splitGroupId(item.id));
     if (!crntGroup) {
@@ -63,10 +64,10 @@ export class EditGroup {
       name
     });
 
-    ext.setSetting(SETTING.groups, filteredGroups);
+    ext.setSetting(SETTING.groups, filteredGroups, !!item.isGlobal ? "global" : "project");
 
     // Update all the bookmarks
-    const crntItems = await ViewService.projectView.currentItems() || [];
+    const crntItems = await getBookmarks(!!item.isGlobal);
     const bookmarks = crntItems.map(b => {
       if (b.groupId === crntGroup.id) {
         b.groupId = newGroupId;

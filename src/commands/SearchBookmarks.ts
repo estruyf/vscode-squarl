@@ -4,7 +4,6 @@ import { COMMAND } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ExtensionService } from "../services/ExtensionService";
 import { createBookmark } from "../utils";
-import { BookmarkView } from "../views/BookmarkView";
 
 interface SearchItem extends QuickPickItem {
   id: string;
@@ -22,19 +21,12 @@ export class SearchBookmarks {
   }
 
   private static async search(e: BookmarkTreeItem) {
-    const globalBookmarks = await ViewService.globalView.currentItems() || [];
-    const personalBookmarks = await ViewService.projectView.currentItems() || [];
+    const projectBookmarks = await ViewService.projectView.currentItems() || [];
     const teamBookmarks = await ViewService.teamView.currentItems() || [];
 
     const allSearchItems = [
-      ...globalBookmarks.map(b => ({
-        label: `$(globe) ${b.name}`,
-        description: b.description,
-        detail: b.path,
-        id: b.id
-      } as SearchItem)),
-      ...personalBookmarks.map(b => ({
-        label: `$(code) ${b.name}`,
+      ...projectBookmarks.map(b => ({
+        label: `${b.isGlobal ? "$(globe)" : "$(code)"} ${b.name}`,
         description: b.description,
         detail: b.path,
         id: b.id
@@ -60,7 +52,7 @@ export class SearchBookmarks {
       return;
     }
 
-    const selectedBookmark = [...personalBookmarks, ...(teamBookmarks || [])].find(b => b.id === answer.id);
+    const selectedBookmark = [...projectBookmarks, ...(teamBookmarks || [])].find(b => b.id === answer.id);
     if (!selectedBookmark) {
       return;
     }

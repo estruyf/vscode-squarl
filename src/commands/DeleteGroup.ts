@@ -4,6 +4,7 @@ import { Group } from "../models";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
 import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
+import { getBookmarks } from "../utils";
 import { saveBookmarks } from "../utils/SaveBookmarks";
 import { splitGroupId } from "../utils/SplitGroupId";
 import { BookmarkView } from "../views/BookmarkView";
@@ -26,7 +27,7 @@ export class DeleteGroup {
     }
 
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!item.isGlobal ? "global" : "project") || [];
 
     const crntGroup = groups.find(g => g.id === splitGroupId(item.id));
     if (!crntGroup) {
@@ -42,10 +43,10 @@ export class DeleteGroup {
     }
 
     const newGroups = groups.filter(g => g.id !== crntGroup.id);
-    ext.setSetting(SETTING.groups, newGroups);
+    ext.setSetting(SETTING.groups, newGroups, !!item.isGlobal ? "global" : "project");
 
     // Update all the bookmarks
-    const crntItems = await ViewService.projectView.currentItems() || [];
+    const crntItems = await getBookmarks(!!item.isGlobal);
     const bookmarks = crntItems.map(b => {
       if (b.groupId === crntGroup.id) {
         delete b.groupId;

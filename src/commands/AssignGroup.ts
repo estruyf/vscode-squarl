@@ -8,6 +8,7 @@ import { ExtensionService } from "../services/ExtensionService";
 import { selectGroupQuestion } from '../questions';
 import { saveBookmarks } from '../utils/SaveBookmarks';
 import { ViewService } from '../services';
+import { getBookmarks } from '../utils';
 
 
 export class AssignGroup {
@@ -25,24 +26,22 @@ export class AssignGroup {
   }
 
   public static async assign(item: BookmarkTreeItem) {
-
     if (!item) {
       return;
     }
 
     const ext = ExtensionService.getInstance();
-    const groups = ext.getSetting<Group[]>(SETTING.groups) || [];
+    const groups = ext.getSetting<Group[]>(SETTING.groups, !!item.isGlobal ? "global" : "project") || [];
 
     if (!groups || groups.length === 0) {
       return;
     }
 
-
-    const bookmarks = await ViewService.projectView.currentItems() || [];
+    const bookmarks = await getBookmarks(!!item.isGlobal);
     const bookmark = bookmarks.find(b => b.id === item.id);
 
     if (bookmark) {
-      const groupId = await selectGroupQuestion(bookmark?.groupId);
+      const groupId = await selectGroupQuestion(bookmark?.groupId, !!item.isGlobal);
       if (groupId) {
         bookmark.groupId = groupId;
       } else {

@@ -1,10 +1,9 @@
 import { commands, window } from "vscode";
-import { COMMAND, SETTING } from "../constants";
+import { COMMAND } from "../constants";
 import { BookmarkTreeItem } from "../providers/BookmarkProvider";
-import { ViewService } from "../services";
 import { ExtensionService } from "../services/ExtensionService";
+import { getBookmarks } from "../utils";
 import { saveBookmarks } from "../utils/SaveBookmarks";
-import { BookmarkView } from "../views/BookmarkView";
 
 
 export class DeleteBookmarks {
@@ -18,7 +17,7 @@ export class DeleteBookmarks {
     );
   }
 
-  private static async delete(e: BookmarkTreeItem) {
+  private static async delete(item: BookmarkTreeItem) {
     const answer = await window.showQuickPick(["Yes", "No"], {
       placeHolder: "Are you sure you want to delete this bookmark?"
     });
@@ -27,8 +26,8 @@ export class DeleteBookmarks {
       return;
     }
 
-    const crntItems = await ViewService.projectView.currentItems() || [];
-    const newBookmarks = crntItems.filter(b => b.id !== e.id);
-    await saveBookmarks(newBookmarks, !!e.isGlobal);
+    const crntItems = await getBookmarks(!!item.isGlobal);
+    const newBookmarks = crntItems.filter(b => b.id !== item.id);
+    await saveBookmarks(newBookmarks, !!item.isGlobal);
   }
 }
