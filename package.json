@@ -132,7 +132,12 @@
           "type": "array",
           "default": [],
           "examples": [
-            [{ "id": "links", "name": "Links" }]
+            [
+              {
+                "id": "links",
+                "name": "Links"
+              }
+            ]
           ],
           "items": {
             "type": "object",
@@ -340,7 +345,6 @@
           "when": "view == squarl.view.project && viewItem == group",
           "group": "3_modify@4"
         },
-
         {
           "command": "squarl.sort.up",
           "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
@@ -351,7 +355,6 @@
           "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
           "group": "inline@1"
         },
-        
         {
           "command": "squarl.bookmark.addLink",
           "when": "view == squarl.view.project && viewItem =~ /projectGroup|globalGroup/",
@@ -399,6 +402,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "date-fns": "^2.29.1",
     "uuid": "^8.3.2"
   }

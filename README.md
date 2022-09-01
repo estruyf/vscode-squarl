@@ -28,7 +28,7 @@ In most cases, you share this information of which platforms and/or systems used
 
 This is the purpose of Squarl Bookmarks to allow you and your team to create and share these bookmarks. Instead of opening your browser, looking for the project bookmark, and navigating to it. You can now add the bookmark in your project and navigate instantly from within Visual Studio Code to it. 
 
-You can use Squarl Bookmarks to store bookmarks personally (in VS Code `.vscode/settings.json`) or with your team (via a `squarl.json` file).
+You can use Squarl Bookmarks to store bookmarks personally (in VS Code `.vscode/settings.json` or the global user settings) or with your team (via a `squarl.json` file).
 
 ## Features
 
@@ -63,6 +63,10 @@ Once you've added bookmarks, the view will be updated to the bookmarks list view
 <p align="center">
   <img src="./assets/docs/squarl-list-view.png" alt="Bookmark list view" style="display: inline-block" />
 </p>
+
+> **Note**: Global bookmarks are stored in the Visual Studio Code global user settings, the project bookmarks are stored in the `.vscode/settings.json` file of the current project.
+
+![](./assets/docs/add-bookmark.gif)
 
 ### Team
 
@@ -134,7 +138,8 @@ Example:
   "path": "<relative path to file> or <link>",
   "description": "Bookmark description",
   "type": "file|link",
-  "groupId": "group"
+  "groupId": "group",
+  "iconName": "bookmark"
 }
 ```
 
