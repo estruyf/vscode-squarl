@@ -8,7 +8,7 @@ import { ExtensionService } from './../services/ExtensionService';
 import { BookmarkType } from '../models';
 import { parse, relative } from 'path';
 import { selectGroupQuestion } from '../questions';
-import { saveBookmarks } from '../utils/SaveBookmarks';
+import { saveBookmarks, fetchLinkDetails } from '../utils';
 import { ViewService } from '../services';
 import { BookmarkTreeItem } from '../providers/BookmarkProvider';
 
@@ -49,26 +49,35 @@ export class AddBookmarks {
       return;
     }
 
-    const name = await window.showInputBox({
+    const linkDetails = await fetchLinkDetails(link);
+    let name = linkDetails?.title;
+    let description = linkDetails?.description;
+
+    name = await window.showInputBox({
       title: "Name",
       prompt: 'Enter the name of the link',
       placeHolder: '',
       ignoreFocusOut: true,
-      value: link
+      value: name || link
     });
 
     if (!name) {
       return;
     }
 
-    const description = await window.showInputBox({
+    description = await window.showInputBox({
       title: "Description",
       prompt: 'Enter a description for the link',
       placeHolder: 'Example link',
       ignoreFocusOut: true,
+      value: description
     });
 
     const groupId = await selectGroupQuestion(undefined, isGlobal);
+    
+    if (groupId === undefined) {
+      return;
+    }
 
     AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId, isGlobal);    
   }
