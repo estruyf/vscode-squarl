@@ -45,6 +45,7 @@ export const selectGroupQuestion = async (crntGroupId?: string, isGlobal: boolea
   }
 
   const group = await window.showQuickPick(allGroups, {
+    title: "Grouping",
     placeHolder: `To which group do you want to add the bookmark?`,
     canPickMany: false,
     ignoreFocusOut: true

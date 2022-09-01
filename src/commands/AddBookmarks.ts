@@ -1,5 +1,5 @@
 import { getBookmarks } from './../utils/GetBookmarks';
-import { Uri } from 'vscode';
+import { QuickPickItem, Uri } from 'vscode';
 import { Notifications } from './../services/Notifications';
 import { Bookmark } from './../models/Bookmark';
 import { COMMAND } from './../constants/Commands';
@@ -31,8 +31,15 @@ export class AddBookmarks {
    * Add hyperlink as a bookmark
    * @returns 
    */
-  public static async addLink(crntBookmark: BookmarkTreeItem) {
+  public static async addLink(crntBookmark?: BookmarkTreeItem) {
+    const isGlobal = await AddBookmarks.isGlobalQuestion(crntBookmark?.isGlobal);
+
+    if (isGlobal === undefined) {
+      return;
+    }
+
     const link = await window.showInputBox({
+      title: "Link",
       prompt: 'Enter the link to add',
       placeHolder: 'https://example.com',
       ignoreFocusOut: true
@@ -43,6 +50,7 @@ export class AddBookmarks {
     }
 
     const name = await window.showInputBox({
+      title: "Name",
       prompt: 'Enter the name of the link',
       placeHolder: '',
       ignoreFocusOut: true,
@@ -54,14 +62,15 @@ export class AddBookmarks {
     }
 
     const description = await window.showInputBox({
+      title: "Description",
       prompt: 'Enter a description for the link',
       placeHolder: 'Example link',
       ignoreFocusOut: true,
     });
 
-    const groupId = await selectGroupQuestion(undefined, !!crntBookmark.isGlobal);
+    const groupId = await selectGroupQuestion(undefined, isGlobal);
 
-    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId, !!crntBookmark.isGlobal);    
+    AddBookmarks.add(name, link, description || "", BookmarkType.Link, groupId, isGlobal);    
   }
 
   /**
@@ -88,6 +97,11 @@ export class AddBookmarks {
       return;
     }
 
+    const isGlobal = await AddBookmarks.isGlobalQuestion((file as BookmarkTreeItem)?.isGlobal);
+    if (isGlobal === undefined) {
+      return;
+    }
+
     // Get filename from path
     const fileParse = parse(path);
     const fileName = `${fileParse.name}${fileParse.ext}`;
@@ -102,6 +116,7 @@ export class AddBookmarks {
     const bookmarks = await ViewService.projectView.currentItems() || [];
     if (bookmarks.find(b => b.path === path)) {
       const answer = await window.showQuickPick(["Yes", "No"], {
+        title: "Duplicate file entry",
         placeHolder: "It seems the file was already added, do you wish to continue?"
       });
   
@@ -111,6 +126,7 @@ export class AddBookmarks {
     }
 
     const description = await window.showInputBox({
+      title: "Description",
       prompt: 'Enter a description for the file',
       placeHolder: '',
       ignoreFocusOut: false,
@@ -121,7 +137,7 @@ export class AddBookmarks {
       return;
     }
 
-    const groupId = await selectGroupQuestion(undefined, !!(file as BookmarkTreeItem).isGlobal);
+    const groupId = await selectGroupQuestion(undefined, isGlobal);
 
     if (groupId === undefined) {
       return;
@@ -131,6 +147,7 @@ export class AddBookmarks {
     const activeSelection = editor?.selection;
     if (activeSelection && activeSelection.start.line) {
       const answer = await window.showQuickPick(["Yes", "No"], {
+        title: "Highlighted line",
         placeHolder: "Do you want to add the highlighted line reference?"
       });
   
@@ -139,9 +156,51 @@ export class AddBookmarks {
       }
     }
 
-    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId, !!(file as BookmarkTreeItem).isGlobal, highlightedLine);    
+    AddBookmarks.add(fileName, path, description || "", BookmarkType.File, groupId, isGlobal, highlightedLine);    
   }
 
+  /**
+   * Ask if the bookmark should be global or not
+   * @param isGlobal 
+   * @returns 
+   */
+  private static async isGlobalQuestion(isGlobal?: boolean) {
+    if (isGlobal === undefined) {
+      const answer = await window.showQuickPick([
+        {
+          label: "No",
+          description: "Workspace/project settings"
+        } as QuickPickItem,
+        {
+          label: "Yes",
+          description: "Global user settings"
+        } as QuickPickItem,
+      ], {
+        title: "Do you want to add the bookmark to the global settings?",
+        placeHolder: "Your answer",
+        ignoreFocusOut: true
+      });
+
+      if (answer) {
+        return answer.label === "Yes";
+      }
+
+      return undefined;
+    }
+
+    return isGlobal;
+  }
+
+  /**
+   * Add a new bookmark to the global or project settings
+   * @param name 
+   * @param path 
+   * @param description 
+   * @param type 
+   * @param groupId 
+   * @param isGlobal 
+   * @param highlightedLine 
+   */
   private static async add(name: string, path: string, description: string, type: BookmarkType, groupId?: string, isGlobal?: boolean, highlightedLine?: number) {
     const bookmarks = await getBookmarks(!!isGlobal);
 
