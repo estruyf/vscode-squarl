@@ -140,7 +140,7 @@ export class BookmarkTreeItem extends TreeItem {
     const crntLabel = this.label;
     const crntDescription = this.description;
 
-    if (crntDescription) {
+    if (crntDescription && type === BookmarkType.File) {
       this.label = crntDescription;
       this.description = crntLabel
     }
