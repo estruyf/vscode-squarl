@@ -155,7 +155,7 @@ export class AddBookmarks {
     let highlightedLine = undefined;
     const activeSelection = editor?.selection;
     if (activeSelection && activeSelection.start.line) {
-      const answer = await window.showQuickPick(["Yes", "No"], {
+      const answer = await window.showQuickPick(["No", "Yes"], {
         title: "Highlighted line",
         placeHolder: "Do you want to add the highlighted line reference?"
       });

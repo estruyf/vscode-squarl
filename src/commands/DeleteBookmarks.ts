@@ -19,6 +19,7 @@ export class DeleteBookmarks {
 
   private static async delete(item: BookmarkTreeItem) {
     const answer = await window.showQuickPick(["Yes", "No"], {
+      title: "Delete bookmark",
       placeHolder: "Are you sure you want to delete this bookmark?"
     });
 

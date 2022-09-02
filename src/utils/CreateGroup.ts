@@ -10,6 +10,7 @@ export const createGroup = async (isGlobal: boolean = false) => {
   const groups = ext.getSetting<Group[]>(SETTING.groups, isGlobal ? "global" : "project") || [];
 
   const name = await window.showInputBox({
+    title: "Group name",
     prompt: 'What is the name of the group?',
     placeHolder: 'Name of the group',
     ignoreFocusOut: true,

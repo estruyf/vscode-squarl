@@ -42,7 +42,8 @@ export class SearchBookmarks {
     const answer = await window.showQuickPick(
       allSearchItems, 
       {
-        placeHolder: "Search bookmarks",
+        title: "Search bookmarks",
+        placeHolder: "Filter by name, description, or path",
         matchOnDescription: true,
         matchOnDetail: true,
       }

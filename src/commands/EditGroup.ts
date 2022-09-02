@@ -38,6 +38,7 @@ export class EditGroup {
     const filteredGroups = groups.filter(g => g.id !== crntGroup.id) || [];
 
     const name = await window.showInputBox({
+      title: "Group name",
       prompt: 'What name do you want to give your group?',
       placeHolder: 'Name of the group',
       value: crntGroup.name,

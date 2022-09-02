@@ -29,6 +29,7 @@ export class EditBookmarks {
 
     if (crntBookmark.type === BookmarkType.Link) {
       const link = await window.showInputBox({
+        title: "Link",
         prompt: 'Update the link',
         placeHolder: 'https://example.com',
         ignoreFocusOut: true,
@@ -40,6 +41,7 @@ export class EditBookmarks {
       }
 
       const name = await window.showInputBox({
+        title: "Name",
         prompt: 'Update the name of the link',
         placeHolder: '',
         ignoreFocusOut: true,
@@ -51,6 +53,7 @@ export class EditBookmarks {
       }
 
       const description = await window.showInputBox({
+        title: "Description",
         prompt: 'Update the description for the link',
         placeHolder: 'Example link',
         ignoreFocusOut: true,
@@ -62,6 +65,7 @@ export class EditBookmarks {
       bookmark.description = description;
     } else {
       const description = await window.showInputBox({
+        title: "Description",
         prompt: `Update the file description`,
         placeHolder: '',
         ignoreFocusOut: true,

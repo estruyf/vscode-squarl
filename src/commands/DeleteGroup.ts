@@ -35,6 +35,7 @@ export class DeleteGroup {
     }
 
     const answer = await window.showQuickPick(["Yes", "No"], {
+      title: "Delete group",
       placeHolder: "Are you sure you want to delete this group?"
     });
 
