@@ -12,6 +12,9 @@ export const COMMAND = {
   editBookmark: `${EXTENSION_NAME}.bookmark.edit`,
   deleteBookmark: `${EXTENSION_NAME}.bookmark.delete`,
 
+  promoteBookmark: `${EXTENSION_NAME}.bookmark.promote`,
+  demoteBookmark: `${EXTENSION_NAME}.bookmark.demote`,
+
   searchBookmark: `${EXTENSION_NAME}.bookmark.search`,
 
   // Groups
