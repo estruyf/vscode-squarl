@@ -8,17 +8,22 @@ import { BookmarkTreeItem } from "../providers/BookmarkProvider";
  * @param bookmark 
  * @returns 
  */
-export const createBookmark = (bookmark: Bookmark, contextValue: string | undefined = undefined) => {    
+export const createBookmark = (bookmark: Bookmark, contextValue: string | undefined = undefined) => {
+  let context = contextValue ? `${contextValue}Bookmark` : `bookmark`;
+  if (bookmark.isGlobal) {
+    context = `${context}.global`;
+  }
+
   return new BookmarkTreeItem(
     bookmark.id || v4(),
-    bookmark.name, 
-    bookmark.description, 
-    TreeItemCollapsibleState.None, 
+    bookmark.name,
+    bookmark.description,
+    TreeItemCollapsibleState.None,
     bookmark.isGlobal,
     bookmark.iconName || undefined,
     bookmark.path,
     bookmark.highlightedLine,
     bookmark.type,
-    contextValue ? `${contextValue}Bookmark` : "bookmark",
+    context,
   );
 }

@@ -332,22 +332,22 @@
       "view/item/context": [
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "1_move@1"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "1_move@2"
         },
         {
           "command": "squarl.group.assign",
-          "when": "view == squarl.view.project && viewItem == bookmark && squarl:hasgroups",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark/ && squarl:hasgroups",
           "group": "2_groupy@1"
         },
         {
           "command": "squarl.bookmark.edit",
-          "when": "view == squarl.view.project && viewItem == bookmark",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark/",
           "group": "3_modify@3"
         },
         {
@@ -362,7 +362,7 @@
         },
         {
           "command": "squarl.bookmark.demote",
-          "when": "view == squarl.view.project && viewItem == bookmark",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark.global/",
           "group": "4_scope@2"
         },
         {
@@ -377,12 +377,12 @@
         },
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "inline@2"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "inline@1"
         },
         {
