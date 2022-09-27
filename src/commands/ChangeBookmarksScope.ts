@@ -32,18 +32,17 @@ export class ChangeBookmarksScope {
             return;
         }
 
-        const modifiedBookmarks = previousBookmarks.filter(b => b.id !== bookmark.id);
-        await saveBookmarks(modifiedBookmarks, !!crntBookmark.isGlobal);
-
         const groupId = await selectGroupQuestion(undefined, !!newScope);
         if (groupId === undefined) {
             return;
         }
 
+        const modifiedBookmarks = previousBookmarks.filter(b => b.id !== bookmark.id);
+        await saveBookmarks(modifiedBookmarks, !!crntBookmark.isGlobal);
+
         bookmark.groupId = groupId;
         bookmark.isGlobal = newScope;
-        const newBookmarks = await getBookmarks(!!newScope);
-        newBookmarks.push(bookmark);
-        await saveBookmarks(newBookmarks, !!newScope);
+        const bookmarks = await getBookmarks(!!newScope);
+        await saveBookmarks(bookmarks, !!newScope);
     }
 }
