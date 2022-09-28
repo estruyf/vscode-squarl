@@ -1,5 +1,6 @@
 export * from './AddBookmarks';
 export * from './AssignGroup';
+export * from './ChangeBookmarksScope';
 export * from './CreateGroup';
 export * from './DeleteBookmarks';
 export * from './DeleteGroup';

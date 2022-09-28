@@ -1,7 +1,7 @@
 import { OpenBookmark } from './commands/OpenBookmark';
 import { ExtensionContext } from "vscode";
 import { ExtensionService } from "./services/ExtensionService";
-import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting, InitTeam, EditGroup, AssignGroup } from "./commands";
+import { AddBookmarks, CreateGroup, DeleteBookmarks, DeleteGroup, EditBookmarks, SearchBookmarks, Sorting, InitTeam, EditGroup, AssignGroup, ChangeBookmarksScope } from "./commands";
 import { SettingsListener, TeamSettingsListener } from './listeners';
 import { ViewService } from './services';
 
@@ -24,6 +24,7 @@ export async function activate(context: ExtensionContext) {
 	DeleteGroup.registerCommands();
 	Sorting.registerCommands();
 	InitTeam.registerCommands();
+	ChangeBookmarksScope.registerCommands();
 
 	// Register all the listeners
 	SettingsListener.init();

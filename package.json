@@ -70,6 +70,18 @@
         "icon": "$(trash)"
       },
       {
+        "command": "squarl.bookmark.promote",
+        "title": "Promote",
+        "category": "Squarl",
+        "icon": "$(star)"
+      },
+      {
+        "command": "squarl.bookmark.demote",
+        "title": "Demote",
+        "category": "Squarl",
+        "icon": "$(close)"
+      },
+      {
         "command": "squarl.bookmark.edit",
         "title": "Edit",
         "category": "Squarl",
@@ -250,6 +262,14 @@
           "when": "false"
         },
         {
+          "command": "squarl.bookmark.promote",
+          "when": "false"
+        },
+        {
+          "command": "squarl.bookmark.demote",
+          "when": "false"
+        },
+        {
           "command": "squarl.sort.up",
           "when": "false"
         },
@@ -312,28 +332,38 @@
       "view/item/context": [
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "1_move@1"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "1_move@2"
         },
         {
           "command": "squarl.group.assign",
-          "when": "view == squarl.view.project && viewItem == bookmark && squarl:hasgroups",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark/ && squarl:hasgroups",
           "group": "2_groupy@1"
         },
         {
           "command": "squarl.bookmark.edit",
-          "when": "view == squarl.view.project && viewItem == bookmark",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark/",
           "group": "3_modify@3"
         },
         {
           "command": "squarl.bookmark.delete",
           "when": "view == squarl.view.project && viewItem =~ /bookmark|deletedBookmark/",
           "group": "3_modify@4"
+        },
+        {
+          "command": "squarl.bookmark.promote",
+          "when": "view == squarl.view.project && viewItem == bookmark",
+          "group": "4_scope@1"
+        },
+        {
+          "command": "squarl.bookmark.demote",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark.global/",
+          "group": "4_scope@2"
         },
         {
           "command": "squarl.group.edit",
@@ -347,12 +377,12 @@
         },
         {
           "command": "squarl.sort.up",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "inline@2"
         },
         {
           "command": "squarl.sort.down",
-          "when": "view == squarl.view.project && viewItem =~ /bookmark|group/",
+          "when": "view == squarl.view.project && viewItem =~ /^bookmark|group/",
           "group": "inline@1"
         },
         {
