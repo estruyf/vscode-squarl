@@ -159,7 +159,15 @@ Example:
 }
 ```
 
-## Contributing / Issues / Feedback
+## Contributors ✨
+
+<p align="center">
+  <a href="https://github.com/estruyf/vscode-squarl/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=estruyf/vscode-squarl" />
+  </a>
+</p>
+
+## Contributing / Issues / feedback
 
 If you want to contribute, you are more than welcome to do so. Feel free to start by opening an issue on the project repository in order to track the changes.
 
@@ -167,7 +175,7 @@ If you find a bug, or have some feedback, let us know by opening an issue in the
 
 👉 [Navigate to the issue list](https://github.com/estruyf/vscode-squarl/issues).
 
-## Changelog
+## Changelog / Release notes
 
 [CHANGELOG](./CHANGELOG.md)
 

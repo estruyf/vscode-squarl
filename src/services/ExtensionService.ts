@@ -1,5 +1,6 @@
 import { ExtensionContext, ExtensionMode, SecretStorage, Uri, workspace } from "vscode";
 import { CONFIG_KEY } from "../constants";
+import { Logger } from "./Logger";
 
 
 export class ExtensionService {
@@ -132,13 +133,20 @@ export class ExtensionService {
    * @param settingKey 
    * @param value 
    */
-  public async setSetting(settingKey: string, value: any, scope?: "global" | "project"): Promise<void> {
-    const config = workspace.getConfiguration(CONFIG_KEY);
+  public async setSetting(settingKey: string, value: any, scope?: "global" | "project", retry: boolean = false): Promise<void> {
+    try {
+      const config = workspace.getConfiguration(CONFIG_KEY);
 
-    if (scope === "global") {
-      await config.update(settingKey, value, true);
-    } else {
-      await config.update(settingKey, value, false);
+      if (scope === "global") {
+        await config.update(settingKey, value, true);
+      } else {
+        await config.update(settingKey, value, false);
+      }
+    } catch (e) {
+      Logger.error((e as Error).message);
+      if (!retry) {
+        await this.setSetting(settingKey, value, scope, true);
+      }
     }
   }
 }
