@@ -24,7 +24,7 @@ jobs:
       - name: Generate the README
         run: node scripts/prepare-readme.js
 
-      - uses: estruyf/gh-action-beta-version@v0.0.11
+      - uses: estruyf/gh-action-beta-version@v0.0.12
         with:
           build-id: ${{ github.run_id }}
           path: package.json
