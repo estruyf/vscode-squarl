@@ -99,31 +99,13 @@ Once this file contains bookmarks, a team bookmarks view will appear.
 
 The extension has the following commands for you to make use:
 
-| Command | Title |
-| --- | --- |
-| `squarl.bookmark.addFile` | Squarl: Bookmark file |
-| `squarl.bookmark.addLink` | Squarl: Bookmark link |
-| `squarl.bookmark.delete` | Squarl: Delete |
-| `squarl.bookmark.demote` | Squarl: Demote |
-| `squarl.bookmark.open` | Squarl: Open a bookmark |
-| `squarl.bookmark.promote` | Squarl: Promote |
-| `squarl.bookmark.search` | Squarl: Search for a bookmark |
-| `squarl.group.assign` | Squarl: Assign group |
-| `squarl.group.create` | Squarl: Create a bookmark group |
-| `squarl.group.edit` | Squarl: Edit group |
-| `squarl.group.delete` | Squarl: Delete group |
-| `squarl.sort.down` | Squarl: Move down |
-| `squarl.sort.up` | Squarl: Move up |
-| `squarl.team.init` | Squarl: Initialize team file |
+<!-- COMMANDS -->
 
 ## Settings
 
 The extension uses the following settings to manage the behavior:
 
-| Setting | Description | Default |
-| --- | --- | --- |
-| `squarl.bookmarks` | The list of bookmarks | `false` |
-| `squarl.groups` | The list of groups you want to use | `[]` |
+<!-- SETTINGS -->
 
 ### Bookmark item
 

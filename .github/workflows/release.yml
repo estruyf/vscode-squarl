@@ -21,5 +21,8 @@ jobs:
       - name: Install the dependencies
         run: yarn
 
+      - name: Generate the README
+        run: node scripts/prepare-readme.js
+
       - name: Publish
         run: npx vsce publish -p ${{ secrets.VSCE_PAT }} --yarn

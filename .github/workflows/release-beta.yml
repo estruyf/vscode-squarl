@@ -21,8 +21,14 @@ jobs:
       - name: Install the dependencies
         run: yarn
       
-      - name: Prepare BETA
-        run: node scripts/beta-release.js $GITHUB_RUN_ID
+      - name: Generate the README
+        run: node scripts/prepare-readme.js
+
+      - uses: estruyf/gh-action-beta-version@v0.0.11
+        with:
+          build-id: ${{ github.run_id }}
+          path: package.json
+          append-or-replace: 'append'
 
       - name: Publish
         run: npx vsce publish -p ${{ secrets.VSCE_PAT }} --pre-release --yarn --baseImagesUrl https://raw.githubusercontent.com/estruyf/vscode-squarl/dev
