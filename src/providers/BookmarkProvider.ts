@@ -1,17 +1,28 @@
+import { ViewService } from './../services/ViewService';
+import { BookmarkViewType } from './../models/BookmarkViewType';
+import { toAbsPath } from './../utils/ToAbsPath';
 import { ExtensionService } from './../services/ExtensionService';
-import { join } from "path";
-import { Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, Position, Range, TextDocumentShowOptions, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { BookmarkType } from '../models';
+import { COMMAND } from '../constants';
 
 
 
 export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
-  private static readonly Collapsible_Key = `bookmarks.collapsibleStates`;
+  private static readonly Collapsible_Project_Key = `bookmarks.project.collapsibleStates`;
+  private static readonly Collapsible_Team_Key = `bookmarks.team.collapsibleStates`;
   private ext: ExtensionService;
-  public onDidChangeTreeData?: Event<void | BookmarkTreeItem | BookmarkTreeItem[] | null | undefined> | undefined;
 
-  public static async getCollapsibleState(id: string) {
-    const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(BookmarkProvider.Collapsible_Key) || {};
+  private _onDidChangeTreeData = new EventEmitter<BookmarkTreeItem | void>()
+  public readonly onDidChangeTreeData: Event<void | BookmarkTreeItem> = this._onDidChangeTreeData.event;
+
+  constructor(private viewId: BookmarkViewType) {
+    this.ext = ExtensionService.getInstance();
+  }
+
+  public static async getCollapsibleState(id: string, type: BookmarkViewType) {
+    const stateKey = this.getCollapsibleStateKey(type);
+    const elements = await ExtensionService.getInstance().getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
     if (elements[id]) {
       return elements[id];
@@ -20,70 +31,118 @@ export class BookmarkProvider implements TreeDataProvider<BookmarkTreeItem> {
     return TreeItemCollapsibleState.Expanded;
   }
 
-  constructor(private bookmarks: BookmarkTreeItem[]) {
-    this.ext = ExtensionService.getInstance();
+  public refresh(): void {
+    // Triggers the getChildren method to refresh the view
+    this._onDidChangeTreeData.fire();
   }
 
   public async updateCollapsibleState(element: BookmarkTreeItem, collapsibleState: TreeItemCollapsibleState): Promise<void> {
-    const elements = await this.ext.getState<{ [prop: string]: TreeItemCollapsibleState }>(BookmarkProvider.Collapsible_Key) || {};
+    const stateKey = BookmarkProvider.getCollapsibleStateKey(this.viewId);
+    const elements = await this.ext.getState<{ [prop: string]: TreeItemCollapsibleState }>(stateKey) || {};
 
-    elements[element.label] = collapsibleState;
+    elements[element.id] = collapsibleState;
 
-    this.ext.setState(BookmarkProvider.Collapsible_Key, elements);
+    this.ext.setState(stateKey, elements);
   }
   
   public getTreeItem(element: BookmarkTreeItem): TreeItem | Thenable<TreeItem> {
     return element;
   }
   
-  public getChildren(element?: BookmarkTreeItem | undefined): ProviderResult<BookmarkTreeItem[]> {
-    if (element) {
+  public async getChildren(element?: BookmarkTreeItem | undefined): Promise<BookmarkTreeItem[]> {
+    if (!element) {
+      if (this.viewId === BookmarkViewType.team) {
+        const teamBookmarks = await ViewService.teamView.getBookmarks();
+        if (teamBookmarks) {
+          return teamBookmarks;
+        }
+      } else {
+        return await ViewService.projectView.getBookmarks() || [];
+      }
+    } else {
       if (element.children) {
         return element.children;
       }
       return [];
-    } else {
-      return this.bookmarks;
     }
+
+    return [];
+  }
+
+  /**
+   * Retrieve the state key for the collapsible groups
+   * @returns 
+   */
+  private static getCollapsibleStateKey(type: BookmarkViewType = BookmarkViewType.project): string {
+    if (type === BookmarkViewType.team) {
+      return BookmarkProvider.Collapsible_Team_Key;
+    }
+
+    return BookmarkProvider.Collapsible_Project_Key;
   }
 }
 
 export class BookmarkTreeItem extends TreeItem {
   
   constructor(
-    public readonly label: string,
-    public readonly description: string | undefined,
-    public readonly collapsibleState: TreeItemCollapsibleState,
+    public id: string,
+    public label: string,
+    public description: string | undefined,
+    public collapsibleState: TreeItemCollapsibleState,
+    public isGlobal: boolean | undefined,
+    public iconPath: string | ThemeIcon | Uri | { light: string | Uri; dark: string | Uri; } | undefined,
     public path?: string,
+    public highlightedLine?: number,
     public type?: BookmarkType,
+    public contextValue?: string,
     public children?: BookmarkTreeItem[]
   ) {
     super(label, collapsibleState);
 
-    if (type === BookmarkType.File && path) {
-      const wsFolder = ExtensionService.getInstance().getWorkspaceFolder();
-      let fileResourcePath = Uri.parse(path);
-
-      if (wsFolder) {
-        fileResourcePath = Uri.file(join(wsFolder.fsPath, path));
+    if (!type) {
+      if (path?.startsWith(`http`)) {
+        type = BookmarkType.Link;
+      } else if (path) {
+        type = BookmarkType.File;
       }
+    }
 
+    if (type === BookmarkType.File && path) {
+      const fileResourcePath = toAbsPath(path);
       this.resourceUri = fileResourcePath;
     } else if (type === BookmarkType.Link && path) {
       this.resourceUri = Uri.parse(path);
-      this.iconPath = new ThemeIcon("bookmark");
+      this.iconPath = iconPath ? new ThemeIcon(iconPath as string) : new ThemeIcon("bookmark");
     } else {
       this.resourceUri = undefined;
     }
 
     if (this.resourceUri) {
+      const commandArguments: any = [this.resourceUri];
+
+      if (highlightedLine) {
+        const viewOptions = {
+          selection: new Range(new Position(highlightedLine, 0), new Position(highlightedLine, 0))
+        } as TextDocumentShowOptions;
+        
+        commandArguments.push(viewOptions);
+      }
+
       this.command = {
-        command: 'vscode.open',
+        command: COMMAND.openBookmark,
         title: 'Open',
-        arguments: [this.resourceUri]
+        arguments: commandArguments
       };
     }
 
     this.tooltip = this.label;
+
+    const crntLabel = this.label;
+    const crntDescription = this.description;
+
+    if (crntDescription && type === BookmarkType.File) {
+      this.label = crntDescription;
+      this.description = crntLabel
+    }
   }
 }

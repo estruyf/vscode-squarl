@@ -9,5 +9,25 @@
         "dist": true // set this to false to include "dist" folder in search results
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+    "typescript.tsc.autoDetect": "off",
+    "exportall.config.folderListener": [
+        "/src/commands",
+        "/src/constants",
+        "/src/models"
+    ],
+    "squarl.bookmarks": [
+        {
+            "name": "Tree View API",
+            "path": "https://code.visualstudio.com/api/extension-guides/tree-view",
+            "description": "",
+            "type": "link",
+            "groupId": "documentation"
+        }
+    ],
+    "squarl.groups": [
+        {
+            "id": "documentation",
+            "name": "Documentation"
+        }
+    ]
 }

@@ -1,0 +1,36 @@
+{
+  "name": "Project links",
+  "groups": [],
+  "bookmarks": [
+    {
+      "name": "GitHub Repo",
+      "path": "https://github.com/estruyf/vscode-squarl",
+      "type": "link",
+      "iconName": "github"
+    },
+    {
+      "name": "Issues",
+      "path": "https://github.com/estruyf/vscode-squarl/issues",
+      "type": "link",
+      "iconName": "bug"
+    },
+    {
+      "name": "Marketplace",
+      "path": "https://marketplace.visualstudio.com/items?itemName=eliostruyf.vscode-squarl",
+      "type": "link",
+      "iconName": "extensions"
+    },
+    {
+      "name": "@eliostruyf",
+      "path": "https://twitter.com/estruyf",
+      "type": "link",
+      "iconName": "twitter"
+    },
+    {
+      "name": "Sponsor",
+      "path": "https://github.com/sponsors/estruyf",
+      "type": "link",
+      "iconName": "heart"
+    }
+  ]
+}
