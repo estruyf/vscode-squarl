@@ -122,7 +122,7 @@ The extension uses the following settings to manage the behavior:
 
 | Setting | Description | Default |
 | --- | --- | --- |
-| `squarl.bookmarks` | The list of bookmarks | `false` |
+| `squarl.bookmarks` | The list of bookmarks | `[]` |
 | `squarl.groups` | The list of groups you want to use | `[]` |
 
 ### Bookmark item
