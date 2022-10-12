@@ -60,6 +60,12 @@
         "icon": "$(add)"
       },
       {
+        "command": "squarl.bookmark.edit",
+        "title": "Edit",
+        "category": "Squarl",
+        "icon": "$(edit)"
+      },
+      {
         "command": "squarl.bookmark.delete",
         "title": "Delete",
         "category": "Squarl",
