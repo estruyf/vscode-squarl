@@ -186,6 +186,6 @@ If you find a bug, or have some feedback, let us know by opening an issue in the
 
 <p align="center">
   <a href="https://visitorbadge.io">
-    <img src="https://estruyf-github.azurewebsites.net/api/VisitorHit?user=estruyf&repo=vscode-squarl&countColor=%23F05450&labelColor=%230E131F" height="25px" />
+    <img src="https://api.visitorbadge.io/api/VisitorHit?user=estruyf&repo=vscode-squarl&countColor=%23F05450&labelColor=%230E131F" height="25px" />
   </a>
 </p>

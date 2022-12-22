@@ -7,14 +7,6 @@
 <h2 align="center">Bookmark important files and/or links for your projects.</h2>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=eliostruyf.vscode-squarl" title="Check it out on the Visual Studio Marketplace">
-    <img src="https://vsmarketplacebadges.dev/version/eliostruyf.vscode-squarl.svg" alt="Visual Studio Marketplace" style="display: inline-block" />
-  </a>
-
-  <img src="https://vsmarketplacebadges.dev/installs/eliostruyf.vscode-squarl.svg" alt="Number of installs"  style="display: inline-block;margin-left:10px" />
-  
-  <img src="https://vsmarketplacebadges.dev/rating/eliostruyf.vscode-squarl.svg" alt="Ratings" style="display: inline-block;margin-left:10px" />
-
   <a href="https://github.com/sponsors/estruyf" title="Become a sponsor" style="margin-left:10px">
     <img src="https://img.shields.io/github/sponsors/estruyf?color=%23CE2E7C&logo=github&style=flat" alt="Sponsor the project" style="display: inline-block" />
   </a>
@@ -176,6 +168,6 @@ If you find a bug, or have some feedback, let us know by opening an issue in the
 
 <p align="center">
   <a href="https://visitorbadge.io">
-    <img src="https://estruyf-github.azurewebsites.net/api/VisitorHit?user=estruyf&repo=vscode-squarl&countColor=%23F05450&labelColor=%230E131F" height="25px" />
+    <img src="https://api.visitorbadge.io/api/VisitorHit?user=estruyf&repo=vscode-squarl&countColor=%23F05450&labelColor=%230E131F" height="25px" />
   </a>
 </p>
