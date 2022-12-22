@@ -37,7 +37,7 @@ export class BookmarkView {
     const ext = ExtensionService.getInstance();
     const projectBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "project") || [];
     const globalBookmarks = ext.getSetting<Bookmark[]>(SETTING.bookmarks, "global") || [];
-    this._currentItems = [...this.validateBookmarks(projectBookmarks), ...this.validateBookmarks(globalBookmarks)];
+    this._currentItems = [...this.validateBookmarks(projectBookmarks, false), ...this.validateBookmarks(globalBookmarks, true)];
     return this._currentItems;
   }
 
@@ -216,7 +216,7 @@ export class BookmarkView {
    * @returns 
    */
   private async processBookmarks(bookmarks: Bookmark[], groups: Group[], isGlobal?: boolean) {
-    const crntBookmarks = this.validateBookmarks(bookmarks);
+    const crntBookmarks = this.validateBookmarks(bookmarks, isGlobal);
 
     let crntTreeItems = [
       ...crntBookmarks.filter(b => !b.groupId && !b.isDeleted).map(b => createBookmark(b))
@@ -272,9 +272,9 @@ export class BookmarkView {
    * Validate all the bookmarks with an id and check if not deleted
    * @param bookmarks 
    */
-  private validateBookmarks(bookmarks: Bookmark[]) {
+  private validateBookmarks(bookmarks: Bookmark[], isGlobal: boolean = false) {
     return bookmarks.map(b => {
-      if (b.type === BookmarkType.File && !existsSync(toAbsPath(b.path).fsPath)) {
+      if (b.type === BookmarkType.File && !existsSync(isGlobal ? b.path : toAbsPath(b.path).fsPath)) {
         b.isDeleted = true;
       } else {
         delete b.isDeleted;

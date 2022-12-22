@@ -118,7 +118,7 @@ export class AddBookmarks {
     // Get relative path from workspace root
     const ext = ExtensionService.getInstance();
     const wsPath = ext.getWorkspaceFolder();
-    if (wsPath) {
+    if (wsPath && !isGlobal) {
       path = relative(wsPath.fsPath, path);
     }
 
