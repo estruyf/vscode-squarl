@@ -108,7 +108,7 @@ export class BookmarkTreeItem extends TreeItem {
     }
 
     if (type === BookmarkType.File && path) {
-      const fileResourcePath = toAbsPath(path);
+      const fileResourcePath = isGlobal ? Uri.file(path) : toAbsPath(path);
       this.resourceUri = fileResourcePath;
     } else if (type === BookmarkType.Link && path) {
       this.resourceUri = Uri.parse(path);
